@@ -37,8 +37,9 @@ def snoop_section(tree, filename):
                 tag_elements = entry_ele.findall(f".//{tag}", ns)
                 for element in tag_elements:
                     # get path, clean elements of namespaces and re-assemble
-                    element_path = re.sub(r'{.*?}', '', tree.getelementpath(element))
-                    element_path = "/".join(element_path.split("/")[:-1])
+                    raw_element_path = tree.getelementpath(element)
+                    element_path = re.sub(r'{.*?}', '', raw_element_path)
+                    element_path = "/".join(element_path.split("/"))
 
                     # copy and clean the attribute dict
                     element_attribs_dict = { re.sub(r'{.*}', '', a):
