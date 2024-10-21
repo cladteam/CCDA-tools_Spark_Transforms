@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-builds a table of code and value
+Collects elements tagged as code, value, id, effectiveTime, high, low and birthtime, and more
+groups them by section/entry path instance and  logs  it all to a dataset and csv.
 
-This versio correlates values and codes by path and puts them on the same row.
 """
 
 import os
@@ -15,10 +15,9 @@ import vocab_maps
 import pandas as pd
 from collections import defaultdict
 
-ccda_code_values_columns = [ 'filename', 'section', 'codeSystem', 'code',
-                             'value-type', 'value-unit',
-                             'value-value', 'value-code', 'value-codeSystem',  'value-text',
-                             'path']
+ccda_code_values_columns = [ 'filename', 'template_id', 'path', 'field_tag', 'attributes']
+
+ccda_tags = [ 'code', 'codeSystem', 'value', 'id', 'effectiveTime', 'high', 'low', 'birthtime']
 
 
 def snoop_section(tree, filename):
@@ -34,41 +33,31 @@ def snoop_section(tree, filename):
         entry_elements = section_element.findall("entry", ns)
         for entry_ele in entry_elements:
 
-            value_dict = defaultdict(list)  # keys are paths
-            value_elements = entry_ele.findall(".//value", ns)
-            for value_ele in value_elements:
-                value_path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
-                value_path = "/".join(value_path.split("/")[:-1])
-                value_attribs_dict = { re.sub(r'{.*}', '', a):
-                                       re.sub(r'{.*}', '', value_ele.attrib[a])
-                                       for a in value_ele.attrib  }
-                value_dict[value_path].append( (value_attribs_dict, value_ele.text) )
+            for tag in ccda_tags:
+                tag_elements = entry_ele.findall(f".//{tag}", ns)
+                for element in tag_elements:
+                    # get path, clean elements of namespaces and re-assemble
+                    raw_element_path = tree.getelementpath(element)
+                    element_path = re.sub(r'{.*?}', '', raw_element_path)
+                    element_path = "/".join(element_path.split("/"))
 
-            code_elements = entry_ele.findall(".//code", ns)
-            for code_ele in code_elements:
-                code_path = re.sub(r'{.*?}', '', tree.getelementpath(code_ele))
-                code_path = "/".join(code_path.split("/")[:-1])
-                value_tuple_list = value_dict[code_path] # tuple is (dict, text)
-                for value_tuple in value_tuple_list:
+                    # copy and clean the attribute dict
+                    element_attribs_dict = { re.sub(r'{.*}', '', a):
+                                       re.sub(r'{.*}', '', element.attrib[a])
+                                       for a in element.attrib  }
+
                     new_row = pd.DataFrame([{
                         'filename': filename,
-                        'section': section_template_id,
-                        'path': code_path,
-                        'code': code_ele.get('code'),
-                        'codeSystem': code_ele.get('codeSystem'),
-                        'value-type': value_tuple[0].get('type', ''),
-                        'value-unit': value_tuple[0].get('unit', ''),
-                        'value-value': value_tuple[0].get('value', ''),
-                        'value-code': value_tuple[0].get('code', ''),
-                        'value-codeSystem': value_tuple[0].get('codeSystem', ''),
-                        'value-text': value_tuple[1].strip() if value_tuple[1] else ''
+                        'template_id': section_template_id,
+                        'path': element_path,
+                        'field_tag': tag,
+                        'attributes': element_attribs_dict
                     }])
                     trace_df = pd.concat([trace_df, new_row], ignore_index=True)
     return(trace_df)
 
 
 def main():
-
     parser = argparse.ArgumentParser(
         prog='CCDA - OMOP Code Snooper',
         description="finds all code elements and shows what concepts the represent",
@@ -81,7 +70,10 @@ def main():
         tree = ET.parse(args.filename)
         file_df = snoop_section(tree, args.filename)
         #pd.set_option('display.max_rows', len(file_df))
+        pd.set_option('display.max_columns', None) 
+        pd.set_option('display.width', None) 
         print(file_df)
+        file_df.to_csv(f"ccda_coverage_snooper.csv", sep=",", header=True, index=False)
     elif args.directory is not None:
         all_files_df = pd.DataFrame(columns=ccda_code_values_columns)
         only_files = [f for f in os.listdir(args.directory) if os.path.isfile(os.path.join(args.directory, f))]
@@ -91,13 +83,12 @@ def main():
                 file_df = snoop_section(tree, filename)
                 all_files_df = pd.concat([all_files_df, file_df], ignore_index=True)
         #pd.set_option('display.max_rows', len(all_files_df))
+        pd.set_option('display.max_columns', None) 
+        pd.set_option('display.width', None) 
         print(all_files_df)
-        all_files_df.to_csv(f"raw_section_snooper_Chris.csv",
-                                sep=",", header=True, index=False)
+        all_files_df.to_csv(f"ccda_coverage_snooper.csv", sep=",", header=True, index=False)
     else:
         logger.error("Did args parse let us  down? Have neither a file, nor a directory.")
-
-
 
 
 if __name__ == '__main__':
