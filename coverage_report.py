@@ -19,6 +19,7 @@ awk -F, '{print $3}'  ccda_coverage_snooper.csv | grep -v entryRelationship | gr
 """
 import duckdb
 import pandas as pd
+import coverage_report_util as cru
 
 conn = duckdb.connect()
 #pd.set_option('display.max_columns', 10)
@@ -30,140 +31,63 @@ pd.set_option('display.max_colwidth', None)
 
 
 
-section_oid_map_ddl = "CREATE TABLE section_oid_map (oid varchar(20),name varchar(20) ); "
-section_oid_map_insert = """ INSERT INTO section_oid_map
-                 SELECT oid,  name
-		 FROM read_csv('section_oid.csv', delim=',', header=True)
-"""
-
-snooper_fields = ['filename', 'template_id', 'path', 'field_tag', 'attributes']
-snooper_ddl = """
-    CREATE TABLE snooper (
-        filename varchar(200),
-        template_id varchar(20),
-        path varchar(250),
-        field_tag varchar(20),
-        attributes varchar(200) );
-"""
-
-
-snooper_insert = """
-        INSERT INTO snooper
-        SELECT filename, template_id, path, field_tag, attributes
-        FROM read_csv("ccda_coverage_snooper.csv", delim=',', header=True)
-"""
-
-trace_fields = ['filename', 'template_id', 'root_xpath', 'element_tag', 'config_type',
-                'domain', 'omop_field_tag', 'attribute_value', 'attributes' ]
-trace_ddl = """
-    CREATE TABLE trace (
-        filename varchar(200),
-        template_id varchar(20),
-        root_xpath varchar(250),
-        element_tag varchar(20),
-        config_type varchar(20),
-        domain varchar(20),
-        omop_field_tag varchar(20),
-        attribute_value varchar(20),
-        attributes varchar(200) );
-"""
-
-trace_insert = """
-        INSERT INTO  trace
-        SELECT filename, template_id, root_xpath, element_tag, config_type,
-                domain, omop_field_tag, attribute_value, attributes
-        FROM read_csv("../CCDA_OMOP_by_Python/trace.csv", delim=',', header=True)
-"""
-
-conn.execute(snooper_ddl)
-conn.execute(trace_ddl)
-conn.execute(section_oid_map_ddl)
+conn.execute(cru.snooper_ddl)
+conn.execute(cru.trace_ddl)
+conn.execute(cru.section_oid_map_ddl)
 
 #df = conn.sql("SHOW ALL TABLES;").df()
 #print(df[['database', 'schema', 'name']])
 #print("")
 
 
-conn.execute(snooper_insert)
-conn.execute(trace_insert)
-conn.execute(section_oid_map_insert)
+conn.execute(cru.snooper_insert)
+conn.execute(cru.trace_insert)
+conn.execute(cru.section_oid_map_insert)
 
-############################################################################################################3
 
-df=conn.execute("""SELECT *
-                   FROM  section_oid_map
-                    """).df()
-print("OID map")
-print(df)
-print("")
-
-# count SNOOPER
-df=conn.execute("""SELECT count(*) as row_ct, count(distinct path) as d_ct 
-		   FROM snooper """).df()
-print("Snooper")
-print(df)
-print("")
-df=conn.execute("""SELECT template_id, count(*) as row_ct, count(distinct path) as d_ct 
-		   FROM snooper 
-		   GROUP BY template_id""").df()
-print("Snooper")
-print(df)
-print("")
-
-# count TRACE 
-df=conn.execute("""SELECT count(*) as row_ct, count(distinct root_xpath) as d_ct 
-                   FROM trace 
-                   WHERE config_type = 'FIELD' AND attribute_value is not null """).df()
-print("Trace")
-print(df)
-print("")
-
-#################### INNER JOIN ##########
-
-# count JOIN
-df=conn.execute("""SELECT   count(*) as row_ct, count(distinct s.path) as path_ct, count(distinct root_xpath) as xpath_ct 
-                   FROM snooper s join trace t on  s.path = t.root_xpath
-                   WHERE config_type = 'FIELD' AND attribute_value is not null 
-		   """).df()
-print("Count INNER join ")
-print(df)
-print("")
-df=conn.execute("""SELECT  s.template_id, count(*) as row_ct, count(distinct s.path) as path_ct, count(distinct root_xpath) as xpath_ct 
-                   FROM snooper s join trace t on  s.path = t.root_xpath
-                   WHERE config_type = 'FIELD' AND attribute_value is not null 
-		   GROUP BY s.template_id""").df()
-print("Count INNER join ")
-print(df)
-print("")
-
-# select JOIN
-df=conn.execute("""SELECT  distinct s.path as distinct_same
-                   FROM snooper s join trace t on  s.path = t.root_xpath
-                   WHERE config_type = 'FIELD' AND attribute_value is not null
-                   ORDER BY root_xpath """).df()
-print("INNER join ")
-print(df)
-print("")
-
-#################### LEFT JOIN ##########
-
-# select count only left  JOIN
-df=conn.execute("""SELECT   count(distinct s.path) as left_behind_d, count(s.path) as left_behind
-                   FROM snooper s left join trace t on  s.path = t.root_xpath
-                   WHERE root_xpath is null AND config_type = 'FIELD' AND attribute_value is not null
-		   """).df()
+df=conn.execute("""SELECT section_oid_map.name, count(distinct t.root_xpath) as num, count(distinct s.path) as denom,
+                          concat(count(distinct t.root_xpath)*100//count(distinct s.path),'%') as fraction,
+                          section_oid_map.priority
+                   FROM snooper s 
+                   LEFT JOIN trace t ON  s.path = t.root_xpath 
+                     AND s.template_id = t.template_id
+		           LEFT JOIN section_oid_map on s.template_id = section_oid_map.oid
+                   WHERE config_type = 'FIELD' OR config_type is null
+                    AND  PRIORITY < 100
+		           GROUP BY section_oid_map.name, section_oid_map.priority
+                   ORDER BY priority, section_oid_map.name
+            """).df()
 print("Count LEFT join")
 print(df)
 print("")
 
-# select count only left  JOIN
-df=conn.execute("""SELECT section_oid_map.name, count(distinct t.root_xpath) as numerator, count(distinct s.path) as denominator ,
-                          concat(count(distinct t.root_xpath)*100//count(distinct s.path),'%') as fraction
+df=conn.execute("""SELECT s.template_id, section_oid_map.name, count(distinct t.root_xpath) as num, count(distinct s.path) as denom,
+                          concat(count(distinct t.root_xpath)*100//count(distinct s.path),'%') as fraction,
+                          section_oid_map.priority
                    FROM snooper s 
                    LEFT JOIN trace t ON  s.path = t.root_xpath
-		   LEFT JOIN section_oid_map on s.template_id = section_oid_map.oid
+                     AND s.template_id = t.template_id
+		           LEFT JOIN section_oid_map on s.template_id = section_oid_map.oid
                    WHERE config_type = 'FIELD' OR config_type is null
-		   GROUP BY section_oid_map.name""").df()
+              --      AND  PRIORITY < 100
+		           GROUP BY section_oid_map.name, s.template_id , section_oid_map.priority
+                   ORDER BY priority, section_oid_map.name
+            """).df()
+print("Count LEFT join")
+print(df)
+print("")
+
+df=conn.execute("""SELECT s.template_id, section_oid_map.name, t.config_path
+                   FROM snooper s 
+                   LEFT JOIN trace t ON  s.path = t.root_xpath
+                     AND s.template_id = t.template_id
+		           LEFT JOIN section_oid_map on s.template_id = section_oid_map.oid
+                   WHERE config_type = 'FIELD' 
+                      -- OR config_type is null
+                     AND  config_path is not null
+		           GROUP BY section_oid_map.name, s.template_id , section_oid_map.priority, config_path
+                   ORDER BY s.template_id
+            """).df()
 print("Count LEFT join")
 print(df)
 print("")
@@ -178,17 +102,6 @@ print("")
 #print(df)
 #print("")
 
-#################### RIGHT JOIN ##########
-# select count only right  JOIN
-df=conn.execute("""SELECT  count(distinct root_xpath) as only_trace_d, count(root_xpath) as only_trace
-                   FROM snooper s right join trace t on  s.path = t.root_xpath
-                   WHERE s.path is null
-                   AND config_type = 'FIELD' 
-                   AND attribute_value is not null
-""").df()
-print("Count RIGHT join")
-print(df)
-print("")
 
 # select only right  JOIN
 df=conn.execute("""SELECT distinct root_xpath

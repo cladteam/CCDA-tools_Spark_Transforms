@@ -1,0 +1,28 @@
+oid,name,priority
+2.16.840.1.113883.10.20.1.6,Immunizations??,4
+2.16.840.1.113883.10.20.22.2.1.1,CCD,999
+2 .16.840.1.113883.10.20.22.2.1,Medications (entries optional),3
+2.16.840.1.113883.10.20.22.2.2,Immunizations (entries optional),4
+2.16.840.1.113883.10.20.22.2.2.1,Immunizations (entries requried),4
+2.16.840.1.113883.10.20.22.2.3,Results (entries optional),3
+2.16.840.1.113883.10.20.22.2.3.1,Results (entries requried),3
+2.16.840.1.113883.10.20.22.2.4,Vital Signs (entries optional),3
+2.16.840.1.113883.10.20.22.2.4.1,Vital Signs (entries required),3
+2.16.840.1.113883.10.20.22.2.5,Problems (entries optional),3
+2.16.840.1.113883.10.20.22.2.5.1,Problems (entries requried),3
+2.16.840.1.113883.10.20.22.2.6,Allergies (entries optional),999
+2.16.840.1.113883.10.20.22.2.6.1,Allergies (entries required),999
+2.16.840.1.113883.10.20.22.2.7,Procedures (entries optional),4
+2.16.840.1.113883.10.20.22.2.7.1,Procedures (entries required),4
+2.16.840.1.113883.10.20.22.2.8,Assesment Section,999
+2.16.840.1.113883.10.20.22.2.10,Plan of Treatment,999
+2.16.840.1.113883.10.20.22.2.11.1,Discharge Medications Section (entries required),999
+2.16.840.1.113883.10.20.22.2.14,Functional Status Section,999
+2.16.840.1.113883.10.20.22.2.15,Family History Section,999
+2.16.840.1.113883.10.20.22.2.17,Social History,4
+2.16.840.1.113883.10.20.22.2.18,Payers Section,999
+2.16.840.1.113883.10.20.22.2.21,Advance Directives Section (entries optional),999
+2.16.840.1.113883.10.20.22.2.22,Encounter (entries optional),2
+2.16.840.1.113883.10.20.22.2.22.1,Encounter (entries required),2
+2.16.840.1.113883.10.20.22.2.23,Medical Equipment Section,5
+2.16.840.1.113883.10.20.22.2.60,Goals,999
