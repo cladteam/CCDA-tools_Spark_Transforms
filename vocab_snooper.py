@@ -21,11 +21,8 @@ columns = [
     "codeSystem", "src_cd", "src_cd_description","src_cd_count", "target_concept_id", 
     "target_concept_name", "target_domain_id", "target_vocabulary_id", 
     "target_concept_class_id", "target_standard_concept", "target_concept_code", 
-    "target_tbl_column_name", "notes"
+   "target_tbl_column_name", "notes", "counts"
 ]
-
-# Create an empty DataFrame with the specified columns
-vocab_codes = pd.DataFrame(columns=columns)
 
 def get_code_name(codeSystem, codeSystemName, code, concept_df):
     """
@@ -45,12 +42,13 @@ def get_code_name(codeSystem, codeSystemName, code, concept_df):
     return 'n/a', 'n/a'
 
 
-def snoop_for_code_tag(tree, expr, ns, concept_df, vocab_codes):
+def snoop_for_code_tag(tree, expr, concept_df):
     """
     Finds all elements matching the XPath expression (expr) in the XML tree and extracts relevant attributes.
     Appends the extracted information to the given vocab_codes DataFrame.
     """
     section_elements = tree.findall(expr, ns)
+    vocab_codes = pd.DataFrame(columns=columns)
     for section_element in section_elements:
         # Extract attributes
         data_element_node = re.sub(r'{.*}', '', section_element.tag)
@@ -69,28 +67,13 @@ def snoop_for_code_tag(tree, expr, ns, concept_df, vocab_codes):
             'src_cd_description': src_cd_description,
 
         }])
-        count_dict[(codeSystem,src_cd)] += 1
         # Concatenate the new row with the DataFrame
-        combined_df = pd.concat([vocab_codes, new_row], ignore_index=True)
-        if count_dict[(codeSystem,src_cd)] = 0:
-            vocab_codes = pd.concat([vocab_codes, new_row], ignore_index=True)
-        else
-            pass
-        # Check if the new row already exists in the DataFrame
-        if combined_df.duplicated().iloc[-1]:
-            print(combined_df.iloc[-1])
-            existing_row = combined_df.iloc[0].index[0]
-            duplicate_index = existing_row.index[0]
-            vocab_codes.at[duplicate_index, 'src_cd_count'] += 1
-            pass
-            #print("Duplicate row exists. Skipping insertion.")
-        else:
-            vocab_codes = pd.concat([vocab_codes, new_row], ignore_index=True)
-        ###
+        vocab_codes = pd.concat([vocab_codes, new_row], ignore_index=True)
+
     return vocab_codes
 
 
-def process_xml_file(file_path, concept_df, ns):
+def process_xml_file(file_path, concept_df):
     """
     Process a single XML file, extract code elements, and return the resulting DataFrame.
     """
@@ -103,29 +86,31 @@ def process_xml_file(file_path, concept_df, ns):
         print(f"Error: Failed to parse {file_path}.")
         return pd.DataFrame()  # Return an empty DataFrame
 
-    # Initialize an empty DataFrame for vocab codes
-    global vocab_codes
+    #vocab_codes = snoop_for_code_tag(tree, ".//code", concept_df, vocab_codes)
+    # would need to concatenate and consider duplicates between the two, while leaving duplicates
+    # within on... Do we need both?
 
-    # Extract code elements (tag-based and attribute-based)
-    vocab_codes = snoop_for_code_tag(tree, ".//code", ns, concept_df, vocab_codes)
-    vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]", ns, concept_df, vocab_codes)
-    vocab_codes['data_source'] = 'ccda-xml'#os.path.basename(file_path)
+
+    vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]", concept_df)
+    vocab_codes['data_source'] = os.path.basename(file_path)
+
     return vocab_codes
 
 
-def process_directory(directory, concept_df, ns):
+def process_directory(directory, concept_df):
     """
     Process all XML files in a directory and return a combined DataFrame.
     """
-    global vocab_codes
+    all_vocab_codes = pd.DataFrame(columns=columns)
 
     # Loop through all XML files in the directory
     for file_path in Path(directory).rglob("*.xml"):
         print(f"Processing file: {file_path}")
-        vocab_codes = process_xml_file(file_path, concept_df, ns)
-        #all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
+        file_vocab_codes = process_xml_file(file_path, concept_df)
+        all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
 
-    return vocab_codes
+    return all_vocab_codes
+
 
 
 def main():
@@ -150,39 +135,23 @@ def main():
 
     all_vocab_codes = pd.DataFrame()
 
-    # If a filename is provided, process that single file
     if args.filename:
         print(f"Processing single file: {args.filename}")
         all_vocab_codes = process_xml_file(args.filename, concept_df, ns)
-
-    # If a directory is provided, process all XML files in that directory
-    if args.directory:
+    elif args.directory:
         print(f"Processing all files in directory: {args.directory}")
-        all_vocab_codes = process_directory(args.directory, concept_df, ns)
+        all_vocab_codes = process_directory(args.directory, concept_df)
 
-    # Clean up the DataFrame
-    short_vocabs = all_vocab_codes[['src_cd','codeSystem']].drop_duplicates().sort_values(by='codeSystem')
-    #short_vocabs = all_vocab_codes.drop_duplicates().sort_values(by='codeSystem')
-###
-    # Output to CSV
-    #all_vocab_codes.to_csv('/foundry/outputs/vocab_discovered_codes_expanded.csv', index=False)
-    #short_vocabs.to_csv('/foundry/outputs/vocab_discovered_codes.csv', index=False)
+    # count code, codeSystem pairs.
+    counts_df = all_vocab_codes.groupby(['src_cd', 'codeSystem']).size().reset_index(name='counts')
+
+    # Output Datasets to Foundry HDFS
+    vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
+    vocab_discovered_codes_expanded.write_table(counts_df)
+
+    vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
+    vocab_discovered_codes_expanded.write_table(all_vocab_codes)
     
-    #vocab_discovered_codescsv = Dataset.get("vocab_discovered_codescsv")
-    #vocab_discovered_codescsv.upload_file("/foundry/outputs/vocab_discovered_codes.csv")
-
-    #vocab_discovered_codes_expandedcsv = Dataset.get("vocab_discovered_codes_expandedcsv")
-    #vocab_discovered_codes_expandedcsv.upload_file("/foundry/outputs/vocab_discovered_codes_expanded.csv")
-
-    # Output as Dataset
-    #vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
-    #vocab_discovered_codes_expanded.write_table(all_vocab_codes)
-    
-    #vocab_discovered_codes = Dataset.get("vocab_discovered_codes")
-    #vocab_discovered_codes.write_table(short_vocabs)
-###
-    print(short_vocabs)
-
 
 if __name__ == '__main__':
     main()

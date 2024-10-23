@@ -12,7 +12,5 @@ vocab_discovered_codes:
   rid: "ri.foundry.main.dataset.e5fc74fe-6b25-4de0-b722-088575f62ed9"
 vocab_discovered_codes_expanded:
   rid: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
-vocab_discovered_codes_expandedcsv:
-  rid: "ri.foundry.main.dataset.c8daf6e1-14ab-41f6-ab80-c18b2dc9dbb2"
-vocab_discovered_codescsv:
-  rid: "ri.foundry.main.dataset.92cec8e5-b787-4801-99ea-76a0967e22cf"
+vocab_discovered_codes_with_counts:
+  rid: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
