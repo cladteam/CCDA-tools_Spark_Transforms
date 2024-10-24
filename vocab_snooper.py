@@ -45,6 +45,9 @@ def snoop_for_code_tag(tree, expr):
     for element in element_list:
         # Extract attributes
         data_element_node = re.sub(r'{.*}', '', element.tag)
+        #src_cd = element.attrib.get('code')
+        #codeSystem = element.attrib.get('codeSystem')
+        #resource = element.attrib.get('codeSystemName')
         src_cd_description = element.attrib.get('displayName')
         src_cd = element.get('code')
         codeSystem = element.get('codeSystem')
@@ -52,6 +55,7 @@ def snoop_for_code_tag(tree, expr):
         src_cd_description = element.get('displayName')
 
         element_path = tree.getelementpath(element)
+        print(f"XX {element_path}")
 
 
         # Append to vocab_codes DataFrame
@@ -85,6 +89,8 @@ def process_xml_file(file_path):
     #vocab_codes = snoop_for_code_tag(tree, ".//code", concept_df, vocab_codes)
     # would need to concatenate and consider duplicates between the two, while leaving duplicates
     # within on... Do we need both?
+
+
     vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
 

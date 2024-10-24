@@ -9,19 +9,30 @@ The more general snoopers are more experimental.
 
 ## FLOW
     Resources/*.xml
-    |  |
-    |  +-->ccda_coverage_snooper.py 
-    |       |
-    |       +---> ccda_coverage_snooper.csv
+    |  |  |
+    |  |  +--> CCDA_OMOP_by_Python/data_driven_parse.py --> trace.csv
+    |  |                                                     |
+    |  +--> ccda_coverage_snooper.py                         |
+    |       |                                                \/
+    |       +---> ccda_coverage_snooper.csv  --------> coverage_report.py
+    |              |  |                                 |
+    |              |  |                                 +--> coverage_report.csv
     |              |  |
-    |              |  +-->count_vocab_by_section.py --> count_vocab_by_section.csv
-    |              +--> section_coverage_report.py --> section_coverage_report.csv
-    |
-    +---> vocab_snooper.py
-          |  | \
-          |  | +--> counts.csv
-          |  +--> (DS) vocab_discovered_codes_with_counts
-          +-----> (DS) vocab_discovered_codes_expanded
+    |              |  +--> section_coverage_report.py --> section_coverage_report.csv
+    |              |
+    |              +--> count_vocab_by_section.py --> count_vocab_by_section.csv
+    |                                                                     |
+    +---> vocab_snooper.py                                                |
+          | |  |                                                          |
+          | |  +--> (DS) vocab_discovered_codes_with_counts               |
+          | +-----> (DS) vocab_discovered_codes_expanded                  |
+          |                                                               |:q
+          :
+          +--> counts.csv                                                 |
+                 |                                                        |
+                 +------> reconcile_counts.py <---------------------------+
+                            |
+                            +---- section_subtotals.csv
           
           
 ## Snoopers

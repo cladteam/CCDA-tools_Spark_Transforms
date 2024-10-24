@@ -38,6 +38,7 @@ dash=2.18.1=pyhd8ed1ab_0 @ c7211bb6
 dash-table=5.0.0=pyhd8ed1ab_1 @ c72e1b30
 debugpy=1.8.7=py312h2ec8cdc_0 @ ad241afe
 decorator=5.1.1=pyhd8ed1ab_0 @ fe451c34
+duckdb=1.1.2=hd8ed1ab_0 @ 931c1ab2
 exceptiongroup=1.2.2=pyhd8ed1ab_0 @ c7211bb6
 executing=2.1.0=pyhd8ed1ab_0 @ c7211bb6
 flask=3.0.3=pyhd8ed1ab_0 @ c7211bb6
@@ -145,6 +146,7 @@ pygments=2.18.0=pyhd8ed1ab_0 @ c7211bb6
 pysocks=1.7.1=pyha2e5f31_6 @ fe451c34
 python=3.12.7=hc5c86c4_0_cpython @ ad241afe
 python-dateutil=2.9.0=pyhd8ed1ab_0 @ c7211bb6
+python-duckdb=1.1.2=py312h2ec8cdc_1 @ ad241afe
 python-tzdata=2024.2=pyhd8ed1ab_0 @ c7211bb6
 python_abi=3.12=5_cp312 @ ad241afe
 pytz=2024.1=pyhd8ed1ab_0 @ c7211bb6
@@ -197,6 +199,7 @@ stack-data==0.6.2
 5a011d5e - noarch @ tar.bz2 @ ri.artifacts.repository.python-library.foundry-transforms-lib
 605019c2 - noarch @ tar.bz2 @ ri.foundry-sdk-asset-bundle.main.artifacts.repository
 81d6167d - noarch @ conda @ ri.artifacts.repository.python-library.models
+931c1ab2 - noarch @ conda @ ri.artifacts.repository.artifactory.external-conda-forge
 ad241afe - linux-64 @ conda @ ri.artifacts.repository.artifactory.external-conda-forge
 c7211bb6 - noarch @ conda @ ri.artifacts.repository.bundle.jupyter-default-environment
 c72e1b30 - noarch @ tar.bz2 @ ri.artifacts.repository.artifactory.external-conda-forge
@@ -209,4 +212,4 @@ ri.foundry-sdk-asset-bundle.main.artifacts.repository
 ri.stemma.main.repository.42f809ff-135a-45ce-bc46-683c2ca00426
 
 [conda lock version]
-v3 - 4b3a51d590f8c3a1a45b9721a99233c646fc3384323be4104b7c28a87ed6347f
+v3 - bb4fd9b0daf7db06b62802242ae4c3a846fc3384323be4104b7c28a87ed6347f

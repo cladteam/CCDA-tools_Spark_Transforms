@@ -5,6 +5,7 @@ source:
   path: ../src
 requirements:
   run:
+  - duckdb
   - vim
   - dash-table
   - dash

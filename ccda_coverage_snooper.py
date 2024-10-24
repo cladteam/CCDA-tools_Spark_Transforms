@@ -17,8 +17,12 @@ from collections import defaultdict
 
 ccda_code_values_columns = [ 'filename', 'template_id', 'path', 'field_tag', 'attributes']
 
-ccda_tags = [ 'code', 'codeSystem', 'value', 'id', 'effectiveTime', 'high', 'low', 'birthtime']
-
+#ccda_tags = [ 'code', 'codeSystem', 'value', 'id', 'effectiveTime', 'high', 'low', 'birthtime']
+ccda_tags = [ 'code', 'codeSystem', 'value', 'id', 'effectiveTime', 'high', 'low', 'birthtime',
+    'administrationUnitCode', 'administrativeGenderCode', 'confidentialityCode', 'dischargeDispositionCode',
+    'ethnicGroupCode', 'functionCode', 'interpretationCode', 'maritalStatusCode', 'modeCode',
+    'priorityCode', 'proficiencyLevelCode', 'raceCode', 'religiousAffiliationCode', 'routeCode',
+    'standardIndustryClassCode', 'targetSiteCode', 'translation' ]
 
 def snoop_section(tree, filename):
     trace_df = pd.DataFrame(columns=ccda_code_values_columns)
@@ -45,7 +49,6 @@ def snoop_section(tree, filename):
                     element_attribs_dict = { re.sub(r'{.*}', '', a):
                                        re.sub(r'{.*}', '', element.attrib[a])
                                        for a in element.attrib  }
-
                     new_row = pd.DataFrame([{
                         'filename': filename,
                         'template_id': section_template_id,
