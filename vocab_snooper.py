@@ -1,3 +1,13 @@
+
+"""
+    vocab_snooper.py
+    
+    INPUT: resources directory of CCDA XML files
+    OUTPUT: Foundry datasets:
+        "vocab_discovered_codes_with_counts"
+        "vocab_discovered_codes_expanded" 
+"""
+
 import argparse
 import re
 import lxml.etree as ET
@@ -24,39 +34,25 @@ columns = [
    "target_tbl_column_name", "notes", "counts"
 ]
 
-def get_code_name(codeSystem, codeSystemName, code, concept_df):
-    """
-    Retrieves the concept name from a concept DataFrame based on the given code system, code system name, and code.
-    Returns 'n/a' if no match is found.
-    """
-    if codeSystemName:
-        vocabulary_id = re.sub(r' CT', '', codeSystemName)  # Remove unwanted text from codeSystemName
-        concept_query = f"concept_code == '{code}' and vocabulary_id == '{vocabulary_id}'"
-        concept_row = concept_df.query(concept_query)
-
-        if concept_row.size > 1:
-            concept_name = concept_row['concept_name'].values[0]
-            vocabulary_id = concept_row['vocabulary_id'].values[0]
-            return concept_name, vocabulary_id
-        return 'n/a', 'n/a'
-    return 'n/a', 'n/a'
-
-
-def snoop_for_code_tag(tree, expr, concept_df):
+def snoop_for_code_tag(tree, expr):
     """
     Finds all elements matching the XPath expression (expr) in the XML tree and extracts relevant attributes.
     Appends the extracted information to the given vocab_codes DataFrame.
     """
-    section_elements = tree.findall(expr, ns)
+    #section_elements = tree.findall(expr, ns)
+    element_list = tree.xpath(expr)
     vocab_codes = pd.DataFrame(columns=columns)
-    for section_element in section_elements:
+    for element in element_list:
         # Extract attributes
-        data_element_node = re.sub(r'{.*}', '', section_element.tag)
-        src_cd = section_element.attrib.get('code')
-        codeSystem = section_element.attrib.get('codeSystem')
-        resource = section_element.attrib.get('codeSystemName')
-        src_cd_description = section_element.attrib.get('displayName')
-        #templateId = section_element.attrib.get('templateId')
+        data_element_node = re.sub(r'{.*}', '', element.tag)
+        src_cd_description = element.attrib.get('displayName')
+        src_cd = element.get('code')
+        codeSystem = element.get('codeSystem')
+        resource = element.get('codeSystemName')
+        src_cd_description = element.get('displayName')
+
+        element_path = tree.getelementpath(element)
+
 
         # Append to vocab_codes DataFrame
         new_row = pd.DataFrame([{
@@ -73,7 +69,7 @@ def snoop_for_code_tag(tree, expr, concept_df):
     return vocab_codes
 
 
-def process_xml_file(file_path, concept_df):
+def process_xml_file(file_path):
     """
     Process a single XML file, extract code elements, and return the resulting DataFrame.
     """
@@ -89,15 +85,13 @@ def process_xml_file(file_path, concept_df):
     #vocab_codes = snoop_for_code_tag(tree, ".//code", concept_df, vocab_codes)
     # would need to concatenate and consider duplicates between the two, while leaving duplicates
     # within on... Do we need both?
-
-
-    vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]", concept_df)
+    vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
 
     return vocab_codes
 
 
-def process_directory(directory, concept_df):
+def process_directory(directory):
     """
     Process all XML files in a directory and return a combined DataFrame.
     """
@@ -106,7 +100,7 @@ def process_directory(directory, concept_df):
     # Loop through all XML files in the directory
     for file_path in Path(directory).rglob("*.xml"):
         print(f"Processing file: {file_path}")
-        file_vocab_codes = process_xml_file(file_path, concept_df)
+        file_vocab_codes = process_xml_file(file_path)
         all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
 
     return all_vocab_codes
@@ -129,28 +123,30 @@ def main():
         print("Error: You must provide either a filename or a directory.")
         return
 
-    print("Reading Vocabulary, this may take a minute...")
-    # Load concept DataFrame (assuming you have this functionality available)
-    concept_df = [] #vocab_maps.read_concept()
-
     all_vocab_codes = pd.DataFrame()
 
     if args.filename:
         print(f"Processing single file: {args.filename}")
-        all_vocab_codes = process_xml_file(args.filename, concept_df, ns)
+        all_vocab_codes = process_xml_file(args.filename)
     elif args.directory:
         print(f"Processing all files in directory: {args.directory}")
-        all_vocab_codes = process_directory(args.directory, concept_df)
+        all_vocab_codes = process_directory(args.directory)
+        
 
+    all_vocab_codes.to_csv("vocab_codes.csv")
     # count code, codeSystem pairs.
     counts_df = all_vocab_codes.groupby(['src_cd', 'codeSystem']).size().reset_index(name='counts')
+    counts_df.drop_duplicates().to_csv("counts_deduped.csv")
+    counts_df.to_csv("counts.csv")
+    
 
     # Output Datasets to Foundry HDFS
-    vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
-    vocab_discovered_codes_expanded.write_table(counts_df)
+    if False:
+        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
+        vocab_discovered_codes_expanded.write_table(counts_df)
 
-    vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
-    vocab_discovered_codes_expanded.write_table(all_vocab_codes)
+        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
+        vocab_discovered_codes_expanded.write_table(all_vocab_codes)
     
 
 if __name__ == '__main__':

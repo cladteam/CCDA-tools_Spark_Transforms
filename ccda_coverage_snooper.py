@@ -51,6 +51,8 @@ def snoop_section(tree, filename):
                         'template_id': section_template_id,
                         'path': element_path,
                         'field_tag': tag,
+                        'code' : element_attribs_dict['code'] if 'code' in element_attribs_dict else None,
+                        'codeSystem' : element_attribs_dict['codeSystem'] if 'codeSystem' in element_attribs_dict else  None,
                         'attributes': element_attribs_dict
                     }])
                     trace_df = pd.concat([trace_df, new_row], ignore_index=True)

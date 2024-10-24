@@ -7,6 +7,23 @@ The code snoopers are pretty simple. They produce a list of
 codeSytem and OID code pairs.
 The more general snoopers are more experimental.
 
+## FLOW
+    Resources/*.xml
+    |  |
+    |  +-->ccda_coverage_snooper.py 
+    |       |
+    |       +---> ccda_coverage_snooper.csv
+    |              |  |
+    |              |  +-->count_vocab_by_section.py --> count_vocab_by_section.csv
+    |              +--> section_coverage_report.py --> section_coverage_report.csv
+    |
+    +---> vocab_snooper.py
+          |  | \
+          |  | +--> counts.csv
+          |  +--> (DS) vocab_discovered_codes_with_counts
+          +-----> (DS) vocab_discovered_codes_expanded
+          
+          
 ## Snoopers
 - raw_section_snooper.py
   Working towards data for pre-OMOP side DQ.
