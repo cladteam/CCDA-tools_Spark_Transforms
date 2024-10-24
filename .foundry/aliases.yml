@@ -1,5 +1,7 @@
 ccda_ccd_b1_ambulatory_v2:
   rid: "ri.foundry.main.dataset.240efe95-edd1-4e3f-82cf-c913ee5ec077"
+count_vocab_by_section:
+  rid: "ri.foundry.main.dataset.b402b5b7-943c-406c-b86c-9d7653fc1b5c"
 dq_ccda_snooper_people:
   rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
 omop_concept:

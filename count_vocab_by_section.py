@@ -25,6 +25,10 @@ def main():
     counts_df.sort_values(by="counts", ascending=True, inplace=True, kind='mergesort')
     counts_df = counts_df.rename(columns={"name": "section_name"})
     counts_df.to_csv("count_vocab_by_section.csv")
+    from foundry.transforms import Dataset
+
+    count_vocab_by_section = Dataset.get("count_vocab_by_section")
+    count_vocab_by_section.write_table(counts_df)
 
 if __name__ == "__main__":
     main()
