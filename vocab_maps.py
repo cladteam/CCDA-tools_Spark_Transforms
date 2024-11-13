@@ -13,13 +13,7 @@ import numpy as np
 import argparse
 import os
 
-def read_oid_map():
-    oid_map_df = pd.read_csv("oid.csv", header=0,
-                             on_bad_lines='warn',
-                             dtype={ 'oid': str, 'vocabulary_id': str }
-                             #engine='c', header=0, index_col=0, sep=',',
-                            )
-    return oid_map_df
+
 
 
 def read_concept():
@@ -100,13 +94,12 @@ def source_to_concept_map():
 
 
 def read_vocabulary_tables():
-    """ returns (oid_map_df, concept_df, concept_relationship_df)
+    """ returns (concept_df, concept_relationship_df)
     """
 
-    oid_map_df = read_oid_map()
     concept_df = read_concept()
     concept_maps_to_df = read_concept_maps_to()
     source_to_conceptt_df = source_to_concept_map()
 
-    return (oid_map_df, concept_df, concept_maps_to_df,source_to_concept_df)
+    return (concept_df, concept_maps_to_df,source_to_concept_df)
 
