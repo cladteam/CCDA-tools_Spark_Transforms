@@ -98,7 +98,7 @@ app = dash.Dash(__name__)
 
 # Get list of XML files in the resources folder
 resources_folder = 'resources'
-xslt_file = 'CDA.xsl'
+xslt_file = './CDA.xsl'
 
 # Get list of XML files in the resources folder
 xml_files = [f for f in os.listdir(resources_folder) if f.endswith('.xml')]
