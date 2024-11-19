@@ -11,7 +11,7 @@ def load_ccda_file(file_path):
     tree = ET.parse(file_path)
     return tree.getroot()
 
-# Function to perform XSLT transformation
+# Function to perform XSLT transformation and return cleaned HTML content
 def transform_ccda_file(xml_file, xslt_file):
     try:
         # Parse the XML and XSL files
@@ -21,7 +21,14 @@ def transform_ccda_file(xml_file, xslt_file):
 
         # Apply the transformation
         result = transform(xml_doc)
-        return str(result)
+        html_content = str(result)
+
+        # Remove the XML declaration and DOCTYPE if present
+        cleaned_html = html_content.replace('<?xml version="1.0"?>', '').replace(
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">', ''
+        ).strip()
+
+        return cleaned_html
     except Exception as e:
         return f"Error during transformation: {e}"
 
@@ -127,13 +134,13 @@ app.layout = html.Div([
     ]),
     html.Div([
         html.H3("Transformed HTML Preview"),
-        html.Div(id='transformed-html', style={'whiteSpace': 'pre-wrap', 'border': '1px solid black', 'padding': '10px'})
+        html.Iframe(id='transformed-html', style={'width': '100%', 'height': '400px', 'border': '1px solid black'})
     ])
 ])
 
 @app.callback(
     [dash.dependencies.Output('demographics-list', 'children'),
-     dash.dependencies.Output('transformed-html', 'children')],
+     dash.dependencies.Output('transformed-html', 'srcDoc')],
     [dash.dependencies.Input('file-dropdown', 'value')]
 )
 def update_output(file_path):
