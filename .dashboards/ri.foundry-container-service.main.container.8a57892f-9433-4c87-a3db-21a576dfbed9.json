@@ -13,7 +13,7 @@
     "ENABLE_MANAGED_CRAN_ENVIRONMENTS" : "false",
     "ENABLE_MANAGED_R_CONDA_ENVIRONMENTS" : "false",
     "ENABLE_WRITE_BRANCH_PREFIX" : "false",
-    "MODULE_NAME" : "application.coverage_dashboard",
+    "MODULE_NAME" : "application.ccda_explorer_dashboard",
     "UPLOAD_CODE_CHECKPOINTS" : "false",
     "VARIABLE_NAME" : "server"
   },
