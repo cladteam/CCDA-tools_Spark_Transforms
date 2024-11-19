@@ -134,7 +134,7 @@ app.layout = html.Div([
     ]),
     html.Div([
         html.H3("Transformed HTML Preview"),
-        html.Iframe(id='transformed-html', style={'width': '100%', 'height': '400px', 'border': '1px solid black'})
+        html.Iframe(id='transformed-html', style={'width': '100%', 'height': '600px', 'border': '1px solid black'})
     ])
 ])
 
