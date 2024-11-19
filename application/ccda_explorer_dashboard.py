@@ -11,6 +11,20 @@ def load_ccda_file(file_path):
     tree = ET.parse(file_path)
     return tree.getroot()
 
+# Function to perform XSLT transformation
+def transform_ccda_file(xml_file, xslt_file):
+    try:
+        # Parse the XML and XSL files
+        xml_doc = ET.parse(xml_file)
+        xslt_doc = ET.parse(xslt_file)
+        transform = ET.XSLT(xslt_doc)
+
+        # Apply the transformation
+        result = transform(xml_doc)
+        return str(result)
+    except Exception as e:
+        return f"Error during transformation: {e}"
+
 # Function to extract patient demographics
 def get_patient_demographics(root):
     namespace = {'hl7': 'urn:hl7-org:v3'}
@@ -84,18 +98,21 @@ app = dash.Dash(__name__)
 
 # Get list of XML files in the resources folder
 resources_folder = 'resources'
+xslt_file = 'CDA.xsl'
+
+# Get list of XML files in the resources folder
 xml_files = [f for f in os.listdir(resources_folder) if f.endswith('.xml')]
 
 # Set initial file and parse it
 initial_file = os.path.join(resources_folder, xml_files[0])
-root = load_ccda_file(initial_file)
+#root = load_ccda_file(initial_file)
 
-demographics = get_patient_demographics(root)
-encounters_df = get_encounters(root)
-sections_df = snoop_for_section_tag(root)
+#demographics = get_patient_demographics(root)
+#encounters_df = get_encounters(root)
+#sections_df = snoop_for_section_tag(root)
 
 app.layout = html.Div([
-    html.H1("CCDA Document Explorer"),
+    html.H1("CCDA Document Explorer with XSLT Transformation"),
     html.Div([
         html.Label("Select CCDA File:"),
         dcc.Dropdown(
@@ -106,39 +123,32 @@ app.layout = html.Div([
     ]),
     html.Div([
         html.H3("Patient Demographics"),
-        html.Ul(id='demographics-list', children=[html.Li(f"{key}: {value}") for key, value in demographics.items()])
+        html.Ul(id='demographics-list')
     ]),
     html.Div([
-        html.H3("Encounters"),
-        dash_table.DataTable(
-            id='encounters-table',
-            columns=[{"name": i, "id": i} for i in encounters_df.columns],
-            data=encounters_df.to_dict('records')
-        )
-    ]),
-    html.Div([
-        html.H3("Sections and Codes"),
-        dash_table.DataTable(
-            id='sections-table',
-            columns=[{"name": i, "id": i} for i in sections_df.columns],
-            data=sections_df.to_dict('records')
-        )
+        html.H3("Transformed HTML Preview"),
+        html.Div(id='transformed-html', style={'whiteSpace': 'pre-wrap', 'border': '1px solid black', 'padding': '10px'})
     ])
 ])
 
 @app.callback(
     [dash.dependencies.Output('demographics-list', 'children'),
-     dash.dependencies.Output('encounters-table', 'data'),
-     dash.dependencies.Output('sections-table', 'data')],
+     dash.dependencies.Output('transformed-html', 'children')],
     [dash.dependencies.Input('file-dropdown', 'value')]
 )
 def update_output(file_path):
+    # Load XML
     root = load_ccda_file(file_path)
+    
+    # Extract demographics
     demographics = get_patient_demographics(root)
-    encounters_df = get_encounters(root)
-    sections_df = snoop_for_section_tag(root)
     demographics_list = [html.Li(f"{key}: {value}") for key, value in demographics.items()]
-    return demographics_list, encounters_df.to_dict('records'), sections_df.to_dict('records')
+    
+    # Perform XSLT transformation
+    transformed_html = transform_ccda_file(file_path, xslt_file)
+    
+    return demographics_list, transformed_html
+
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', debug=True)
