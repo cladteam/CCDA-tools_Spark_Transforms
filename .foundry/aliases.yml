@@ -1,5 +1,7 @@
 ccda_ccd_b1_ambulatory_v2:
   rid: "ri.foundry.main.dataset.240efe95-edd1-4e3f-82cf-c913ee5ec077"
+ccda_encounter_code_value_set:
+  rid: "ri.foundry.main.dataset.6a83f3d6-4cd6-413b-9db3-9a792118e69f"
 ccda_value_set_mapping_table_dataset:
   rid: "ri.foundry.main.dataset.5ba1594c-ef36-4eeb-b6c4-d3d005dbd127"
 count_vocab_by_section:
