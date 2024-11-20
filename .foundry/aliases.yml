@@ -20,3 +20,5 @@ vocab_discovered_codes_expanded:
   rid: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
 vocab_discovered_codes_with_counts:
   rid: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
+vsac_encountertypecode:
+  rid: "ri.foundry.main.dataset.f32d1421-220b-4881-b260-d1c9b66a823d"
