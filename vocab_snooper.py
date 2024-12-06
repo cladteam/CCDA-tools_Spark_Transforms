@@ -13,7 +13,7 @@ import re
 import lxml.etree as ET
 import os
 from xml_ns import ns
-from vocab_map_file import oid_map
+#from vocab_map_file import oid_map
 import vocab_maps
 import pandas as pd
 from pathlib import Path
@@ -28,7 +28,7 @@ from collections import defaultdict
 # for comparision, edit as necessary per requirements.
 columns = [
     "data_source", "resource", "data_element_path", "data_element_node", 
-    "codeSystem", "src_cd", "src_cd_description","src_cd_count", "target_concept_id", 
+    "codeSystem", "src_cd", "src_cd_description","src_cd_unit","src_cd_count", "target_concept_id", 
     "target_concept_name", "target_domain_id", "target_vocabulary_id", 
     "target_concept_class_id", "target_standard_concept", "target_concept_code", 
    "target_tbl_column_name", "notes", "counts"
@@ -53,6 +53,7 @@ def snoop_for_code_tag(tree, expr):
         codeSystem = element.get('codeSystem')
         resource = element.get('codeSystemName')
         src_cd_description = element.get('displayName')
+        src_cd_unit = element.get('unit')
 
         element_path = tree.getelementpath(element)
         print(f"XX {element_path}")
@@ -65,6 +66,7 @@ def snoop_for_code_tag(tree, expr):
             'codeSystem': codeSystem,
             'resource': resource,
             'src_cd_description': src_cd_description,
+            'src_cd_unit': src_cd_unit,
 
         }])
         # Concatenate the new row with the DataFrame
@@ -148,11 +150,11 @@ def main():
 
     # Output Datasets to Foundry HDFS
     if False:
-        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
-        vocab_discovered_codes_expanded.write_table(counts_df)
+        #vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
+        #vocab_discovered_codes_expanded.write_table(counts_df)
 
         vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
-        vocab_discovered_codes_expanded.write_table(all_vocab_codes)
+        #vocab_discovered_codes_expanded.write_table(all_vocab_codes)
     
 
 if __name__ == '__main__':

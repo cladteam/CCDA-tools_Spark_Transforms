@@ -10,6 +10,10 @@ count_vocab_by_section:
   rid: "ri.foundry.main.dataset.70caf6d9-1abd-4142-aab2-f020f8cefcd0"
 dq_ccda_snooper_people:
   rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
+gs_person:
+  rid: "ri.foundry.main.dataset.b496020b-ac95-4dc0-b843-523d64b124e1"
+gs_visit_occurrence:
+  rid: "ri.foundry.main.dataset.70b73b5c-5f14-4472-80f2-605a73a278e9"
 omop_concept:
   rid: "ri.foundry.main.dataset.831ad30e-a134-41ac-8f68-def86cc8b05c"
 omop_concept_relationship:
