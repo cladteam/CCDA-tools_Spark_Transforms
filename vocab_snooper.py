@@ -162,7 +162,7 @@ def main():
     
 
     # Output Datasets to Foundry HDFS
-    if False:
+    if True:
         vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
         vocab_discovered_codes_expanded.write_table(counts_df)
 

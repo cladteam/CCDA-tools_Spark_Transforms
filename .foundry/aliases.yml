@@ -10,6 +10,8 @@ count_vocab_by_section:
   rid: "ri.foundry.main.dataset.70caf6d9-1abd-4142-aab2-f020f8cefcd0"
 dq_ccda_snooper_people:
   rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
+gs_measurement:
+  rid: "ri.foundry.main.dataset.b3d79624-ae0f-4253-8a22-993e63a26e5c"
 gs_person:
   rid: "ri.foundry.main.dataset.b496020b-ac95-4dc0-b843-523d64b124e1"
 gs_visit_occurrence:
