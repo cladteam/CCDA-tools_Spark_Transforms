@@ -43,6 +43,7 @@ def snoop_for_code_tag(tree, expr):
     element_list = tree.xpath(expr)
     vocab_codes = pd.DataFrame(columns=columns)
     for element in element_list:
+        element_path = tree.getelementpath(element)
         # Extract attributes
         data_element_node = re.sub(r'{.*}', '', element.tag)
         #src_cd = element.attrib.get('code')
@@ -53,13 +54,25 @@ def snoop_for_code_tag(tree, expr):
         codeSystem = element.get('codeSystem')
         resource = element.get('codeSystemName')
         src_cd_description = element.get('displayName')
-        src_cd_unit = element.get('unit')
+        src_cd_unit = ''
+        if element is not None:
+            for sibling in element.itersiblings():
+                if sibling.tag == '{urn:hl7-org:v3}value':
+                    src_cd_unit = sibling.get('unit')               
+        
+        if element is not None:
+            # Use iterancestors() to find <doseQuantity> in any ancestor
+            for ancestor in element.iterancestors():
+                # Check if the ancestor contains a <doseQuantity> element
+                if ancestor.tag in ('{urn:hl7-org:v3}author','{urn:hl7-org:v3}informant','{urn:hl7-org:v3}entryRelationship','{urn:hl7-org:v3}entry','{urn:hl7-org:v3}routeCode'):
+                    break
+                if ancestor.tag == '{urn:hl7-org:v3}substanceAdministration':
+                    dose_quantity_element = ancestor.find('.//{urn:hl7-org:v3}doseQuantity')
+                    if dose_quantity_element is not None:
+                        src_cd_unit = dose_quantity_element.get('unit')
+                        break
 
-        element_path = tree.getelementpath(element)
-        print(f"XX {element_path}")
-
-
-        # Append to vocab_codes DataFrame
+# Append to vocab_codes DataFrame
         new_row = pd.DataFrame([{
             'data_element_node': data_element_node,
             'src_cd': src_cd,
@@ -150,11 +163,11 @@ def main():
 
     # Output Datasets to Foundry HDFS
     if False:
-        #vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
-        #vocab_discovered_codes_expanded.write_table(counts_df)
+        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
+        vocab_discovered_codes_expanded.write_table(counts_df)
 
         vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
-        #vocab_discovered_codes_expanded.write_table(all_vocab_codes)
+        vocab_discovered_codes_expanded.write_table(all_vocab_codes)
     
 
 if __name__ == '__main__':
