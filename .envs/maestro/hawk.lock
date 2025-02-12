@@ -4,8 +4,7 @@
 [conda]
 _libgcc_mutex=0.1=conda_forge @ 16fe1c80
 _openmp_mutex=4.5=2_gnu @ 16fe1c80
-<<<<<<< HEAD
-asttokens=2.4.1=pyhd8ed1ab_0 @ c7211bb6
+asttokens=3.0.0=pyhd8ed1ab_1 @ c7211bb6
 aws-c-auth=0.8.0=hb88c0a9_10 @ ad241afe
 aws-c-cal=0.8.0=hecf86a2_2 @ ad241afe
 aws-c-common=0.10.3=hb9d3cd8_0 @ ad241afe
@@ -14,355 +13,160 @@ aws-c-event-stream=0.5.0=h1ffe551_7 @ ad241afe
 aws-c-http=0.9.1=hab05fe4_2 @ ad241afe
 aws-c-io=0.15.2=hdeadb07_2 @ ad241afe
 aws-c-mqtt=0.11.0=h7bd072d_8 @ ad241afe
-aws-c-s3=0.7.1=h3a84f74_3 @ ad241afe
+aws-c-s3=0.7.4=h3a84f74_0 @ ad241afe
 aws-c-sdkutils=0.2.1=hf42f96a_1 @ ad241afe
 aws-checksums=0.2.2=hf42f96a_1 @ ad241afe
-aws-crt-cpp=0.29.5=h21d7256_0 @ ad241afe
-aws-sdk-cpp=1.11.449=hdaa582e_3 @ ad241afe
-=======
-asttokens=3.0.0=pyhd8ed1ab_1 @ 931c1ab2
-aws-c-auth=0.8.0=hb88c0a9_10 @ ad241afe
-aws-c-cal=0.8.0=hecf86a2_2 @ ad241afe
-aws-c-common=0.10.3=hb9d3cd8_0 @ ad241afe
-aws-c-compression=0.3.0=hf42f96a_2 @ ad241afe
-aws-c-event-stream=0.5.0=h1ffe551_7 @ ad241afe
-aws-c-http=0.9.1=hab05fe4_2 @ ad241afe
-aws-c-io=0.15.2=hdeadb07_2 @ ad241afe
-aws-c-mqtt=0.11.0=h7bd072d_8 @ ad241afe
-aws-c-s3=0.7.3=h3a84f74_0 @ ad241afe
-aws-c-sdkutils=0.2.1=hf42f96a_1 @ ad241afe
-aws-checksums=0.2.2=hf42f96a_1 @ ad241afe
-aws-crt-cpp=0.29.6=hdec8b0f_1 @ ad241afe
+aws-crt-cpp=0.29.6=h159bff8_2 @ ad241afe
 aws-sdk-cpp=1.11.449=h5558e3c_4 @ ad241afe
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-azure-core-cpp=1.14.0=h5cfcd09_0 @ 989a16c9
-azure-identity-cpp=1.10.0=h113e628_0 @ 989a16c9
-azure-storage-blobs-cpp=12.13.0=h3cf044e_1 @ 989a16c9
-azure-storage-common-cpp=12.8.0=h736e048_1 @ 989a16c9
-azure-storage-files-datalake-cpp=12.12.0=ha633028_1 @ 989a16c9
+azure-core-cpp=1.14.0=h5cfcd09_0 @ ad241afe
+azure-identity-cpp=1.10.0=h113e628_0 @ ad241afe
+azure-storage-blobs-cpp=12.13.0=h3cf044e_1 @ ad241afe
+azure-storage-common-cpp=12.8.0=h736e048_1 @ ad241afe
+azure-storage-files-datalake-cpp=12.12.0=ha633028_1 @ ad241afe
 blinker=1.9.0=pyhff2d567_0 @ c7211bb6
-brotli-python=1.1.0=py312h2ec8cdc_2 @ 49551990
+brotli-python=1.1.0=py312h2ec8cdc_2 @ ad241afe
 bzip2=1.0.8=h4bc722e_7 @ e1c11c02
-<<<<<<< HEAD
-c-ares=1.34.3=hb9d3cd8_1 @ 989a16c9
-=======
-c-ares=1.34.3=hb9d3cd8_1 @ e1c11c02
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-ca-certificates=2024.8.30=hbcca054_0 @ e1c11c02
-<<<<<<< HEAD
-certifi=2024.8.30=pyhd8ed1ab_0 @ 30311944
-cffi=1.17.1=py312h06ac9bb_0 @ 49551990
-charset-normalizer=3.4.0=pyhd8ed1ab_0 @ 30311944
-click=8.1.7=py312h06a4308_0 @ 777e1a0e
-=======
-certifi=2024.8.30=pyhd8ed1ab_0 @ c7211bb6
-cffi=1.17.1=py312h06ac9bb_0 @ 49551990
-charset-normalizer=3.4.0=pyhd8ed1ab_1 @ 20c61ce0
-click=8.1.7=unix_pyh707e725_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-comm=0.2.2=pyhd8ed1ab_0 @ c7211bb6
-conjure-python-client=2.12.0=pyhd8ed1ab_0 @ c7211bb6
-<<<<<<< HEAD
-dash=2.18.1=pyhd8ed1ab_0 @ c7211bb6
-=======
-dash=2.18.2=pyhd8ed1ab_0 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-dash-table=5.0.0=pyhd8ed1ab_1 @ c72e1b30
-debugpy=1.8.9=py312h2ec8cdc_0 @ ad241afe
-<<<<<<< HEAD
-decorator=5.1.1=pyhd8ed1ab_0 @ fe451c34
-duckdb=1.1.3=hd8ed1ab_0 @ 931c1ab2
-exceptiongroup=1.2.2=pyhd8ed1ab_0 @ c7211bb6
-=======
-decorator=5.1.1=pyhd8ed1ab_1 @ 931c1ab2
-duckdb=1.1.3=hd8ed1ab_0 @ 931c1ab2
-exceptiongroup=1.2.2=pyhd8ed1ab_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-executing=2.1.0=pyhd8ed1ab_0 @ c7211bb6
+c-ares=1.34.4=hb9d3cd8_0 @ e1c11c02
+ca-certificates=2025.1.31=hbcca054_0 @ e1c11c02
+certifi=2024.12.14=pyhd8ed1ab_0 @ c7211bb6
+cffi=1.17.1=py312h06ac9bb_0 @ ad241afe
+charset-normalizer=3.4.1=pyhd8ed1ab_0 @ c7211bb6
+click=8.1.8=pyh707e725_0 @ c7211bb6
+comm=0.2.2=pyhd8ed1ab_1 @ c7211bb6
+conjure-python-client=2.12.0=pyhd8ed1ab_1 @ c7211bb6
+dash=2.18.2=pyhd8ed1ab_2 @ c7211bb6
+debugpy=1.8.12=py312h2ec8cdc_0 @ ad241afe
+decorator=5.1.1=pyhd8ed1ab_1 @ c7211bb6
+exceptiongroup=1.2.2=pyhd8ed1ab_1 @ c7211bb6
+executing=2.1.0=pyhd8ed1ab_1 @ c7211bb6
 flask=3.1.0=pyhff2d567_0 @ c7211bb6
-foundry-data-sidecar-api=0.745.0=py_0 @ 5a011d5e
-<<<<<<< HEAD
-foundry-transforms-lib-python=0.757.0=py_0 @ 5a011d5e
-=======
-foundry-transforms-lib-python=0.762.0=py_0 @ 5a011d5e
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-gettext=0.22.5=he02047a_3 @ e1c11c02
-gettext-tools=0.22.5=he02047a_3 @ e1c11c02
+foundry-data-sidecar-api=0.626.0=py_0 @ fe451c34
+foundry-transforms-lib-python=0.639.0=py_0 @ fe451c34
 gflags=2.2.2=h5888daf_1005 @ e1c11c02
 glog=0.7.1=hbabe93e_0 @ e1c11c02
-<<<<<<< HEAD
-h2=4.1.0=pyhd8ed1ab_0 @ 605019c2
-hpack=4.0.0=pyh9f0ad1d_0 @ 605019c2
-hyperframe=6.0.1=pyhd8ed1ab_0 @ 605019c2
-idna=3.10=pyhd8ed1ab_0 @ 30311944
-importlib-metadata=8.5.0=pyha770c72_0 @ 81d6167d
-=======
-h2=4.1.0=pyhd8ed1ab_1 @ 931c1ab2
-hpack=4.0.0=pyhd8ed1ab_1 @ 931c1ab2
-hyperframe=6.0.1=pyhd8ed1ab_1 @ 931c1ab2
-idna=3.10=pyhd8ed1ab_1 @ 20c61ce0
-importlib-metadata=8.5.0=pyha770c72_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
+h2=4.1.0=pyhd8ed1ab_1 @ c7211bb6
+hpack=4.1.0=pyhd8ed1ab_0 @ c7211bb6
+hyperframe=6.1.0=pyhd8ed1ab_0 @ c7211bb6
+icu=75.1=he02047a_0 @ ad241afe
+idna=3.10=pyhd8ed1ab_1 @ c7211bb6
+importlib-metadata=8.6.1=pyha770c72_0 @ c7211bb6
 ipykernel=6.29.5=pyh3099207_0 @ c7211bb6
-<<<<<<< HEAD
-ipython=8.29.0=pyh707e725_0 @ c7211bb6
-=======
-ipython=8.30.0=pyh707e725_0 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-itsdangerous=2.2.0=pyhd8ed1ab_0 @ c7211bb6
-<<<<<<< HEAD
-jedi=0.19.2=pyhff2d567_0 @ c7211bb6
-jinja2=3.1.4=pyhd8ed1ab_0 @ 30311944
-=======
-jedi=0.19.2=pyhd8ed1ab_1 @ 931c1ab2
-jinja2=3.1.4=pyhd8ed1ab_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-jupyter_client=8.6.3=pyhd8ed1ab_0 @ c7211bb6
+ipython=8.31.0=pyh707e725_0 @ c7211bb6
+itsdangerous=2.2.0=pyhd8ed1ab_1 @ c7211bb6
+jedi=0.19.2=pyhd8ed1ab_1 @ c7211bb6
+jinja2=3.1.5=pyhd8ed1ab_0 @ c7211bb6
+jupyter_client=8.6.3=pyhd8ed1ab_1 @ c7211bb6
 jupyter_core=5.7.2=pyh31011fe_1 @ c7211bb6
 keyutils=1.6.1=h166bdaf_0 @ 16fe1c80
 krb5=1.21.3=h659f571_0 @ e1c11c02
 ld_impl_linux-64=2.43=h712a8e2_2 @ e1c11c02
-libabseil=20240722.0=cxx17_h5888daf_1 @ 989a16c9
-<<<<<<< HEAD
-libarrow=18.1.0=h94eee4b_0_cpu @ ad241afe
-libarrow-acero=18.1.0=h5888daf_0_cpu @ ad241afe
-libarrow-dataset=18.1.0=h5888daf_0_cpu @ ad241afe
-libarrow-substrait=18.1.0=h5c8f2c3_0_cpu @ ad241afe
-=======
+libabseil=20240722.0=cxx17_hbbce691_4 @ ad241afe
 libarrow=18.1.0=he15abb1_1_cpu @ ad241afe
 libarrow-acero=18.1.0=h5888daf_1_cpu @ ad241afe
 libarrow-dataset=18.1.0=h5888daf_1_cpu @ ad241afe
 libarrow-substrait=18.1.0=h5c8f2c3_1_cpu @ ad241afe
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-libasprintf=0.22.5=he8f35ee_3 @ e1c11c02
-libasprintf-devel=0.22.5=he8f35ee_3 @ e1c11c02
-libblas=3.9.0=25_linux64_openblas @ e1c11c02
+libblas=3.9.0=28_h59b9bed_openblas @ e1c11c02
 libbrotlicommon=1.1.0=hb9d3cd8_2 @ e1c11c02
 libbrotlidec=1.1.0=hb9d3cd8_2 @ e1c11c02
 libbrotlienc=1.1.0=hb9d3cd8_2 @ e1c11c02
-libcblas=3.9.0=25_linux64_openblas @ e1c11c02
+libcblas=3.9.0=28_he106b2a_openblas @ e1c11c02
 libcrc32c=1.1.2=h9c3ff4c_0 @ 16fe1c80
-libcurl=8.11.0=hbbe4b11_0 @ 3c4a1d2c
-libedit=3.1.20230828=h5eee18b_0 @ 3c4a1d2c
+libcurl=8.11.1=h332b0f4_0 @ ad241afe
+libedit=3.1.20191231=he28a2e2_2 @ 16fe1c80
 libev=4.33=hd590300_2 @ e1c11c02
 libevent=2.1.12=hf998b51_1 @ e1c11c02
 libexpat=2.6.4=h5888daf_0 @ e1c11c02
-libffi=3.4.4=h6a678d5_1 @ 3c4a1d2c
+libffi=3.4.2=h7f98852_5 @ 16fe1c80
 libgcc=14.2.0=h77fa898_1 @ e1c11c02
 libgcc-ng=14.2.0=h69a702a_1 @ e1c11c02
-libgettextpo=0.22.5=he02047a_3 @ e1c11c02
-libgettextpo-devel=0.22.5=he02047a_3 @ e1c11c02
 libgfortran=14.2.0=h69a702a_1 @ e1c11c02
 libgfortran5=14.2.0=hd5240d6_1 @ e1c11c02
 libgomp=14.2.0=h77fa898_1 @ e1c11c02
-libgoogle-cloud=2.31.0=h804f50b_0 @ 989a16c9
-libgoogle-cloud-storage=2.31.0=h0121fbd_0 @ 989a16c9
-libgrpc=1.67.1=hc2c308b_0 @ 989a16c9
+libgoogle-cloud=2.31.0=h804f50b_0 @ ad241afe
+libgoogle-cloud-storage=2.31.0=h0121fbd_0 @ ad241afe
+libgrpc=1.67.1=hc2c308b_0 @ ad241afe
 libiconv=1.17=hd590300_2 @ e1c11c02
-liblapack=3.9.0=25_linux64_openblas @ e1c11c02
-<<<<<<< HEAD
-libnghttp2=1.64.0=h161d5f1_0 @ 989a16c9
-=======
-libnghttp2=1.64.0=h161d5f1_0 @ 3c4a1d2c
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
+liblapack=3.9.0=28_h7ac8fdf_openblas @ e1c11c02
+liblzma=5.6.3=hb9d3cd8_1 @ e1c11c02
+libnghttp2=1.64.0=h161d5f1_0 @ ad241afe
 libnsl=2.0.1=hd590300_0 @ e1c11c02
 libopenblas=0.3.28=pthreads_h94d23a6_1 @ e1c11c02
-<<<<<<< HEAD
-libparquet=18.1.0=h6bd9018_0_cpu @ ad241afe
-=======
 libparquet=18.1.0=h6bd9018_1_cpu @ ad241afe
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-libprotobuf=5.28.2=h5b01275_0 @ 989a16c9
-libre2-11=2024.07.02=hbbce691_1 @ 989a16c9
+libprotobuf=5.28.2=h5b01275_0 @ ad241afe
+libre2-11=2024.07.02=hbbce691_2 @ ad241afe
 libsodium=1.0.20=h4ab18f5_0 @ e1c11c02
-<<<<<<< HEAD
-libsqlite=3.47.0=hadc24fc_1 @ 989a16c9
-libssh2=1.11.1=hf672d98_0 @ 989a16c9
+libsqlite=3.49.0=hee588c1_0 @ ad241afe
+libssh2=1.11.1=hf672d98_0 @ ad241afe
 libstdcxx=14.2.0=hc0a3c3a_1 @ e1c11c02
 libstdcxx-ng=14.2.0=h4852527_1 @ e1c11c02
-libthrift=0.21.0=h0e7cc3e_0 @ 989a16c9
-libutf8proc=2.8.0=h166bdaf_0 @ 16fe1c80
-=======
-libsqlite=3.47.0=hadc24fc_1 @ 3c4a1d2c
-libssh2=1.11.1=hf672d98_0 @ 3c4a1d2c
-libstdcxx=14.2.0=hc0a3c3a_1 @ e1c11c02
-libstdcxx-ng=14.2.0=h4852527_1 @ e1c11c02
-libthrift=0.21.0=h0e7cc3e_0 @ 989a16c9
-libutf8proc=2.8.0=hf23e847_1 @ 3c4a1d2c
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
+libthrift=0.21.0=h0e7cc3e_0 @ ad241afe
+libutf8proc=2.8.0=hf23e847_1 @ e1c11c02
 libuuid=2.38.1=h0b41bf4_0 @ e1c11c02
-libxcb=1.17.0=h8a09558_0 @ ad241afe
-<<<<<<< HEAD
-libxcrypt=4.4.36=hd590300_1 @ 989a16c9
-=======
-libxcrypt=4.4.36=hd590300_1 @ 3c4a1d2c
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-libxml2=2.13.5=h064dc61_0 @ 3c4a1d2c
+libxcrypt=4.4.36=hd590300_1 @ ad241afe
+libxml2=2.13.5=h8d12d68_1 @ ad241afe
 libxslt=1.1.39=h76b75d6_0 @ ad241afe
-<<<<<<< HEAD
-libzlib=1.3.1=hb9d3cd8_2 @ 989a16c9
-=======
-libzlib=1.3.1=hb9d3cd8_2 @ 3c4a1d2c
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-lxml=5.3.0=py312he28fd5a_2 @ ad241afe
-lz4-c=1.9.4=h6a678d5_1 @ 3c4a1d2c
-<<<<<<< HEAD
-markupsafe=3.0.2=py312h178313f_0 @ 49551990
-=======
+libzlib=1.3.1=hb9d3cd8_2 @ ad241afe
+lxml=5.3.1=py312he28fd5a_0 @ ad241afe
+lz4-c=1.9.4=hcb278e6_0 @ e1c11c02
 markupsafe=3.0.2=py312h178313f_1 @ ad241afe
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-matplotlib-inline=0.1.7=pyhd8ed1ab_0 @ c7211bb6
-ncurses=6.5=he02047a_1 @ 989a16c9
-nest-asyncio=1.6.0=pyhd8ed1ab_0 @ c7211bb6
-numpy=2.1.3=py312h58c1407_0 @ ad241afe
-openssl=3.4.0=hb9d3cd8_0 @ e1c11c02
-orc=2.0.3=he039a57_0 @ 989a16c9
-<<<<<<< HEAD
-packaging=24.2=pyhff2d567_1 @ c7211bb6
-=======
-packaging=24.2=pyhd8ed1ab_2 @ 20c61ce0
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
+matplotlib-inline=0.1.7=pyhd8ed1ab_1 @ c7211bb6
+narwhals=1.26.0=pyhd8ed1ab_0 @ 931c1ab2
+ncurses=6.5=h2d0b736_3 @ ad241afe
+nest-asyncio=1.6.0=pyhd8ed1ab_1 @ c7211bb6
+numpy=2.2.2=py312h72c5963_0 @ ad241afe
+openssl=3.4.0=h7b32b05_1 @ e1c11c02
+orc=2.0.3=he039a57_0 @ ad241afe
+packaging=24.2=pyhd8ed1ab_2 @ c7211bb6
 pandas=2.2.3=py312hf9745cd_1 @ ad241afe
-parso=0.8.4=pyhd8ed1ab_1 @ 931c1ab2
-perl=5.32.1=7_hd590300_perl5 @ ad241afe
-pexpect=4.9.0=pyhd8ed1ab_1 @ 931c1ab2
-pickleshare=0.7.5=py_1003 @ fe451c34
-<<<<<<< HEAD
-pip=24.3.1=pyh8b19718_0 @ 30311944
-platformdirs=4.3.6=pyhd8ed1ab_0 @ 30311944
-=======
-pip=24.3.1=pyh8b19718_0 @ c7211bb6
-platformdirs=4.3.6=pyhd8ed1ab_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-plotly=5.24.1=pyhd8ed1ab_0 @ c7211bb6
-<<<<<<< HEAD
-polars=1.15.0=py312hfe7c9be_0 @ ad241afe
-prompt-toolkit=3.0.48=pyha770c72_0 @ c7211bb6
-=======
-polars=1.16.0=py312hfe7c9be_0 @ ad241afe
-prompt-toolkit=3.0.48=pyha770c72_1 @ 931c1ab2
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-psutil=6.1.0=py312h66e93f0_0 @ ad241afe
-pthread-stubs=0.4=hb9d3cd8_1002 @ e1c11c02
-ptyprocess=0.7.0=pyhd8ed1ab_1 @ 931c1ab2
-pure_eval=0.2.3=pyhd8ed1ab_0 @ c7211bb6
+parso=0.8.4=pyhd8ed1ab_1 @ c7211bb6
+pexpect=4.9.0=pyhd8ed1ab_1 @ c7211bb6
+pickleshare=0.7.5=pyhd8ed1ab_1004 @ c7211bb6
+pip=25.0=pyh8b19718_0 @ c7211bb6
+platformdirs=4.3.6=pyhd8ed1ab_1 @ c7211bb6
+plotly=6.0.0=pyhd8ed1ab_0 @ c7211bb6
+prompt-toolkit=3.0.50=pyha770c72_0 @ c7211bb6
+psutil=6.1.1=py312h66e93f0_0 @ ad241afe
+ptyprocess=0.7.0=pyhd8ed1ab_1 @ c7211bb6
+pure_eval=0.2.3=pyhd8ed1ab_1 @ c7211bb6
 pyarrow=18.1.0=py312h7900ff3_0 @ ad241afe
 pyarrow-core=18.1.0=py312h01725c0_0_cpu @ ad241afe
-<<<<<<< HEAD
-pycparser=2.22=pyhd8ed1ab_0 @ 30311944
-pygments=2.18.0=pyhd8ed1ab_0 @ c7211bb6
-pysocks=1.7.1=pyha2e5f31_6 @ 605019c2
-python=3.12.7=hc5c86c4_0_cpython @ 49551990
-python-dateutil=2.9.0.post0=pyhff2d567_0 @ c7211bb6
-python-duckdb=1.1.3=py312h2ec8cdc_0 @ ad241afe
-python-tzdata=2024.2=pyhd8ed1ab_0 @ c7211bb6
-python_abi=3.12=5_cp312 @ 49551990
-pytz=2024.1=pyhd8ed1ab_0 @ 30311944
-=======
-pycparser=2.22=pyh29332c3_1 @ 20c61ce0
-pygments=2.18.0=pyhd8ed1ab_1 @ 931c1ab2
-pysocks=1.7.1=pyha55dd90_7 @ 20c61ce0
-python=3.12.7=hc5c86c4_0_cpython @ 49551990
-python-dateutil=2.9.0.post0=pyhff2d567_1 @ 931c1ab2
-python-duckdb=1.1.3=py312h2ec8cdc_0 @ ad241afe
-python-tzdata=2024.2=pyhd8ed1ab_1 @ 931c1ab2
-python_abi=3.12=5_cp312 @ 49551990
+pycparser=2.22=pyh29332c3_1 @ c7211bb6
+pygments=2.19.1=pyhd8ed1ab_0 @ c7211bb6
+pysocks=1.7.1=pyha55dd90_7 @ c7211bb6
+python=3.12.8=h9e4cc4f_1_cpython @ ad241afe
+python-dateutil=2.9.0.post0=pyhff2d567_1 @ c7211bb6
+python-tzdata=2025.1=pyhd8ed1ab_0 @ c7211bb6
+python_abi=3.12=5_cp312 @ ad241afe
 pytz=2024.1=pyhd8ed1ab_0 @ c7211bb6
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-pyzmq=26.2.0=py312hbf22597_3 @ ad241afe
-re2=2024.07.02=h77b4e00_1 @ 989a16c9
-<<<<<<< HEAD
-readline=8.2=h8228510_1 @ 989a16c9
-requests=2.32.3=pyhd8ed1ab_0 @ 30311944
-=======
-readline=8.2=h8228510_1 @ 3c4a1d2c
-requests=2.32.3=pyhd8ed1ab_1 @ 20c61ce0
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
+pyzmq=26.2.1=py312hbf22597_0 @ ad241afe
+re2=2024.07.02=h9925aae_2 @ ad241afe
+readline=8.2=h8228510_1 @ ad241afe
+requests=2.32.3=pyhd8ed1ab_1 @ c7211bb6
 retrying=1.3.3=pyhd8ed1ab_3 @ c7211bb6
 s2n=1.5.9=h0fd0ee4_0 @ ad241afe
-<<<<<<< HEAD
-setuptools=75.6.0=pyhff2d567_0 @ 931c1ab2
-six=1.16.0=pyhd3eb1b0_1 @ 605019c2
-=======
-setuptools=75.6.0=pyhff2d567_1 @ c7211bb6
-six=1.16.0=pyhd3eb1b0_1 @ 20c61ce0
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-snappy=1.2.1=ha2e4443_0 @ e1c11c02
-stack_data=0.6.2=pyhd8ed1ab_0 @ c7211bb6
-tenacity=9.0.0=pyhd8ed1ab_0 @ c7211bb6
+setuptools=75.8.0=pyhff2d567_0 @ c7211bb6
+six=1.17.0=pyhd8ed1ab_0 @ c7211bb6
+snappy=1.2.1=h8bd8927_1 @ e1c11c02
+stack_data=0.6.3=pyhd8ed1ab_1 @ c7211bb6
 tk=8.6.13=noxft_h4845f30_101 @ e1c11c02
 tornado=6.4.2=py312h66e93f0_0 @ ad241afe
-traitlets=5.14.3=pyhd8ed1ab_0 @ c7211bb6
-<<<<<<< HEAD
-typing-extensions=4.12.2=hd8ed1ab_0 @ 30311944
-typing_extensions=4.12.2=pyha770c72_0 @ 30311944
-tzdata=2024b=hc8b5060_0 @ 30311944
-urllib3=2.2.3=pyhd8ed1ab_0 @ 30311944
-=======
-typing-extensions=4.12.2=hd8ed1ab_1 @ 931c1ab2
-typing_extensions=4.12.2=pyha770c72_1 @ 20c61ce0
-tzdata=2024b=hc8b5060_0 @ c7211bb6
-urllib3=2.2.3=pyhd8ed1ab_1 @ 20c61ce0
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-vim=9.1.0776=py312pl5321h419f9bc_0 @ ad241afe
-<<<<<<< HEAD
-wcwidth=0.2.13=pyhd8ed1ab_0 @ c7211bb6
-werkzeug=3.1.3=pyhff2d567_0 @ c7211bb6
-wheel=0.45.1=pyhd8ed1ab_0 @ 81d6167d
-=======
-wcwidth=0.2.13=pyhd8ed1ab_1 @ 931c1ab2
-werkzeug=3.1.3=pyhd8ed1ab_1 @ 81d6167d
-wheel=0.45.1=pyhd8ed1ab_1 @ 20c61ce0
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-xorg-libice=1.1.1=hb9d3cd8_1 @ e1c11c02
-xorg-libsm=1.2.4=he73a12e_1 @ e1c11c02
-xorg-libx11=1.8.10=h4f16b4b_0 @ ad241afe
-xorg-libxau=1.0.11=hb9d3cd8_1 @ e1c11c02
-xorg-libxdmcp=1.1.5=hb9d3cd8_0 @ e1c11c02
-xorg-libxt=1.3.1=hb9d3cd8_0 @ ad241afe
-xorg-xorgproto=2024.1=hb9d3cd8_1 @ ad241afe
-xz=5.4.6=h5eee18b_1 @ 3c4a1d2c
+traitlets=5.14.3=pyhd8ed1ab_1 @ c7211bb6
+typing_extensions=4.12.2=pyha770c72_1 @ c7211bb6
+tzdata=2025a=h78e105d_0 @ c7211bb6
+urllib3=2.3.0=pyhd8ed1ab_0 @ c7211bb6
+wcwidth=0.2.13=pyhd8ed1ab_1 @ c7211bb6
+werkzeug=3.1.3=pyhd8ed1ab_1 @ c7211bb6
+wheel=0.45.1=pyhd8ed1ab_1 @ c7211bb6
 zeromq=4.3.5=h3b0a872_7 @ e1c11c02
-<<<<<<< HEAD
-zipp=3.21.0=pyhd8ed1ab_0 @ c7211bb6
-=======
-zipp=3.21.0=pyhd8ed1ab_1 @ 81d6167d
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-zstandard=0.23.0=py312hef9b889_1 @ 49551990
+zipp=3.21.0=pyhd8ed1ab_1 @ c7211bb6
+zstandard=0.23.0=py312hef9b889_1 @ ad241afe
 zstd=1.5.6=ha6fb4c9_0 @ e1c11c02
-
-[pip]
-asttokens==3.0.0
-brotli==1.1.0
-dashtable==1.4.5
-jupyter-client==8.6.3
-jupyter-core==5.7.2
-pure-eval==0.2.3
-six==1.17.0
-stack-data==0.6.2
-tzdata==2024.2
 
 [conda-metadata]
 16fe1c80 - linux-64 @ tar.bz2 @ ri.artifacts.repository.bundle.jupyter-default-environment
-<<<<<<< HEAD
-30311944 - noarch @ conda @ ri.foundry-sdk-asset-bundle.main.artifacts.repository
-=======
-20c61ce0 - noarch @ conda @ ri.artifacts.repository.python-library.foundry-transforms-lib
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-3c4a1d2c - linux-64 @ conda @ ri.artifacts.repository.python-library.foundry-transforms-lib
-49551990 - linux-64 @ conda @ ri.foundry-sdk-asset-bundle.main.artifacts.repository
-5a011d5e - noarch @ tar.bz2 @ ri.artifacts.repository.python-library.foundry-transforms-lib
-<<<<<<< HEAD
-605019c2 - noarch @ tar.bz2 @ ri.foundry-sdk-asset-bundle.main.artifacts.repository
-777e1a0e - linux-64 @ tar.bz2 @ ri.foundry-sdk-asset-bundle.main.artifacts.repository
-=======
->>>>>>> d4574f15584c799d72d1c90729e47a50395bff2c
-81d6167d - noarch @ conda @ ri.artifacts.repository.python-library.models
 931c1ab2 - noarch @ conda @ ri.artifacts.repository.artifactory.external-conda-forge
-989a16c9 - linux-64 @ conda @ ri.artifacts.repository.python-library.models
 ad241afe - linux-64 @ conda @ ri.artifacts.repository.artifactory.external-conda-forge
 c7211bb6 - noarch @ conda @ ri.artifacts.repository.bundle.jupyter-default-environment
-c72e1b30 - noarch @ tar.bz2 @ ri.artifacts.repository.artifactory.external-conda-forge
 e1c11c02 - linux-64 @ conda @ ri.artifacts.repository.bundle.jupyter-default-environment
 fe451c34 - noarch @ tar.bz2 @ ri.artifacts.repository.bundle.jupyter-default-environment
 
@@ -372,4 +176,4 @@ ri.foundry-sdk-asset-bundle.main.artifacts.repository
 ri.stemma.main.repository.42f809ff-135a-45ce-bc46-683c2ca00426
 
 [conda lock version]
-v3 - b9335fcdca6c1a975349e93f45b6bcb146fc3384323be4104b7c28a87ed6347f
+v3 - bd472432bb53c83a5387e961945eb18246fc3384323be4104b7c28a87ed6347f

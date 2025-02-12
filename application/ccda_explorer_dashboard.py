@@ -5,6 +5,8 @@ import pandas as pd
 import plotly.express as px
 import os
 import re
+import base64
+import io
 
 # Function to load and parse the XML
 def load_ccda_file(file_path):
@@ -114,6 +116,16 @@ xml_files = [f for f in os.listdir(resources_folder) if f.endswith('.xml')]
 initial_file = os.path.join(resources_folder, xml_files[0])
 #root = load_ccda_file(initial_file)
 
+# Get list of Gold Standard files in the resources folder
+gs_folder = 'gold_standard'
+
+# Get list of XML files in the resources folder
+gs_files = [f for f in os.listdir(gs_folder) if f.endswith('.csv')]
+
+# Set initial file and parse it
+initial_gs_file = os.path.join(gs_folder, gs_files[0])
+#root = load_ccda_file(initial_file)
+
 #demographics = get_patient_demographics(root)
 #encounters_df = get_encounters(root)
 #sections_df = snoop_for_section_tag(root)
@@ -135,13 +147,42 @@ app.layout = html.Div([
     html.Div([
         html.H3("Transformed HTML Preview"),
         html.Iframe(id='transformed-html', style={'width': '100%', 'height': '600px', 'border': '1px solid black'})
+    ]),
+
+    # CSV Editor Section
+    html.Div([
+        html.H3("CSV Editor"),
+        dcc.Upload(
+            id='upload-csv',
+            children=html.Button("Upload CSV File"),
+            multiple=False
+        ),
+        html.Div(id='csv-filename', style={'marginTop': 10}),
+        dash_table.DataTable(
+            id='csv-table',
+            columns=[],  # Dynamically updated
+            data=[],  # Dynamically updated
+            editable=True,
+            row_deletable=True,
+            export_format="csv"
+        ),
+        html.Button("Download CSV", id="download-btn", style={'marginTop': 10}),
+        dcc.Download(id="download-csv")
     ])
 ])
-
+# Callbacks for CCDA file updates
 @app.callback(
     [dash.dependencies.Output('demographics-list', 'children'),
      dash.dependencies.Output('transformed-html', 'srcDoc')],
     [dash.dependencies.Input('file-dropdown', 'value')]
+)
+# Callback to load CSV file
+@app.callback(
+    [dash.dependencies.Output('csv-table', 'columns'),
+     dash.dependencies.Output('csv-table', 'data'),
+     dash.dependencies.Output('csv-filename', 'children')],
+    [dash.dependencies.Input('upload-csv', 'contents')],
+    [dash.dependencies.State('upload-csv', 'filename')]
 )
 def update_output(file_path):
     # Load XML

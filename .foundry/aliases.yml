@@ -12,6 +12,8 @@ dq_ccda_snooper_people:
   rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
 gs_measurement:
   rid: "ri.foundry.main.dataset.b3d79624-ae0f-4253-8a22-993e63a26e5c"
+gs_observation:
+  rid: "ri.foundry.main.dataset.c3af0c2a-d104-48c8-811a-95b03a9b120a"
 gs_person:
   rid: "ri.foundry.main.dataset.b496020b-ac95-4dc0-b843-523d64b124e1"
 gs_visit_occurrence:

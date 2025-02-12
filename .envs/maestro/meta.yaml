@@ -5,11 +5,11 @@ source:
   path: ../src
 requirements:
   run:
+  - dash
+  - lxml
   - duckdb
   - vim
   - dash-table
-  - dash
-  - lxml
   - pandas
   - polars
   - numpy
