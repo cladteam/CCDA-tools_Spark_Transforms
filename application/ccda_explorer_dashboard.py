@@ -152,11 +152,14 @@ app.layout = html.Div([
     # CSV Editor Section
     html.Div([
         html.H3("CSV Editor"),
-        dcc.Upload(
-            id='upload-csv',
-            children=html.Button("Upload CSV File"),
-            multiple=False
-        ),
+        html.Div([
+        html.Label("Select CCDA File:"),
+        dcc.Dropdown(
+            id='file-dropdown',
+            options=[{'label': f, 'value': os.path.join(resources_folder, f)} for f in xml_files],
+            value=initial_file
+        )
+    ]),
         html.Div(id='csv-filename', style={'marginTop': 10}),
         dash_table.DataTable(
             id='csv-table',
@@ -176,14 +179,6 @@ app.layout = html.Div([
      dash.dependencies.Output('transformed-html', 'srcDoc')],
     [dash.dependencies.Input('file-dropdown', 'value')]
 )
-# Callback to load CSV file
-@app.callback(
-    [dash.dependencies.Output('csv-table', 'columns'),
-     dash.dependencies.Output('csv-table', 'data'),
-     dash.dependencies.Output('csv-filename', 'children')],
-    [dash.dependencies.Input('upload-csv', 'contents')],
-    [dash.dependencies.State('upload-csv', 'filename')]
-)
 def update_output(file_path):
     # Load XML
     root = load_ccda_file(file_path)
@@ -197,6 +192,30 @@ def update_output(file_path):
     
     return demographics_list, transformed_html
 
+# Callback to load CSV file
+@app.callback(
+    [dash.dependencies.Output('csv-table', 'columns'),
+     dash.dependencies.Output('csv-table', 'data'),
+     dash.dependencies.Output('csv-filename', 'children')],
+    [dash.dependencies.Input('upload-csv', 'contents')],
+    [dash.dependencies.State('upload-csv', 'filename')]
+)
+def update_csv(contents, filename):
+    if contents is None:
+        return [], [], ""
+
+    # Decode CSV content
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string).decode('utf-8')
+    
+    # Read CSV into DataFrame
+    df = pd.read_csv(io.StringIO(decoded))
+    
+    # Convert to Dash DataTable format
+    columns = [{"name": col, "id": col, "editable": True} for col in df.columns]
+    data = df.to_dict('records')
+
+    return columns, data, f"Loaded File: {filename}"
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', debug=True)
