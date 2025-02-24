@@ -169,7 +169,7 @@ def export_to_hdfs(codes, codes_with_counts, codes_expanded):
 def code_entry_point(dataset_name):
     """ similar to main() but for calling from code, not command line
     """
-    vocab_discovered_codes_expanded = process_dataset(dataset_name)
+    vocab_discovered_codes_expanded = process_dataset_of_files(dataset_name)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
         create_derived_datasets(vocab_discovered_codes_expanded)
     export_to_hdfs(vocab_discovered_codes,
