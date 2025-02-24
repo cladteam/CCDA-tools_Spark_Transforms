@@ -127,6 +127,54 @@ def process_directory(directory):
     return all_vocab_codes
 
 
+def process_dataset_of_files(dataset_name):
+    all_vocab_codes = pd.DataFrame(columns=columns)
+    
+    ccda_documents = Dataset.get(dataset_name)
+    ccda_documents_generator = ccda_documents.files()    
+    for filegen in ccda_documents_generator:
+        filepath = filegen.download()
+        print(f"\n\nPROCESSING {os.path.basename(filepath)}\n")
+        file_vocab_codes = process_xml_file(filepath)
+        all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
+
+    return all_vocab_codes
+            
+        
+def create_derived_datasets(vocab_discovered_codes_expanded):
+    vocab_discovered_codes_expanded.to_csv("vocab_discovered_codes_expanded.csv")
+    
+    vocab_discovered_codes = vocab_discovered_codes_expanded[['src_cd', 'codeSystem']].drop_duplicates()
+    vocab_discovered_codes.to_csv("vocab_discovered_codes.csv")
+    
+    # count code, codeSystem pairs.
+    vocab_discovered_codes_with_counts = \
+         vocab_discovered_codes_expanded.groupby(['src_cd', 'codeSystem'])\
+                                        .size()\
+                                        .reset_index(name='counts')
+    vocab_discovered_codes_with_counts.to_csv("vocab_discovered_codes_with_counts.csv")
+    
+    return(vocab_discovered_codes_with_counts, vocab_discovered_codes)
+
+def export_to_hdfs(codes, codes_with_counts, codes_expanded):
+        ds = Dataset.get("vocab_discovered_codes")
+        ds.write_table(codes)
+        
+        ds = Dataset.get("vocab_discovered_codes_with_counts")
+        ds.write_table(codes_with_counts)
+
+        ds = Dataset.get("vocab_discovered_codes_expanded")
+        ds.write_table(codes_expanded)
+
+def code_entry_point(dataset_name):
+    """ similar to main() but for calling from code, not command line
+    """
+    vocab_discovered_codes_expanded = process_dataset(dataset_name)
+    (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
+        create_derived_datasets(vocab_discovered_codes_expanded)
+    export_to_hdfs(vocab_discovered_codes,
+                   vocab_discovered_codes_with_counts, 
+                   vocab_discovered_codes_expanded)
 
 def main():
     """
@@ -136,8 +184,11 @@ def main():
         prog='CCDA - OMOP Code Snooper',
         description="Finds all code elements and shows what concepts they represent",
         epilog='epilog?')
-    parser.add_argument('-f', '--filename', help="Filename of the XML file to parse")
-    parser.add_argument('-d', '--directory', help="Directory containing XML files to parse")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-f', '--filename', help="Filename of the XML file to parse")
+    group.add_argument('-d', '--directory', help="Directory containing XML files to parse")
+    parser.add_argument('-x', '--export', action=argparse.BooleanOptionalAction, help="export to foundry")
+    group.add_argument('-ds', '--dataset', help="dataset to parse")
     args = parser.parse_args()
 
     if not args.filename and not args.directory:
@@ -148,26 +199,19 @@ def main():
 
     if args.filename:
         print(f"Processing single file: {args.filename}")
-        all_vocab_codes = process_xml_file(args.filename)
+        vocab_discoverd_codes_expanded = process_xml_file(args.filename)
     elif args.directory:
         print(f"Processing all files in directory: {args.directory}")
-        all_vocab_codes = process_directory(args.directory)
-        
-
-    all_vocab_codes.to_csv("vocab_codes.csv")
-    # count code, codeSystem pairs.
-    counts_df = all_vocab_codes.groupby(['src_cd', 'codeSystem']).size().reset_index(name='counts')
-    counts_df.drop_duplicates().to_csv("counts_deduped.csv")
-    counts_df.to_csv("counts.csv")
+        vocab_discovered_codes_expanded = process_directory(args.directory)
+    elif args.dataset:
+        vocab_discovered_codes_expanded = process_dataset_of_files(args.dataset)
     
 
     # Output Datasets to Foundry HDFS
-    if False:
-        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_with_counts")
-        vocab_discovered_codes_expanded.write_table(counts_df)
-
-        vocab_discovered_codes_expanded = Dataset.get("vocab_discovered_codes_expanded")
-        vocab_discovered_codes_expanded.write_table(all_vocab_codes)
+    if args.export:
+        export_to_hdfs(vocab_discovered_codes, 
+                       vocab_discovered_codes_with_counts, 
+                       vocab_discovered_codes_expanded)
     
 
 if __name__ == '__main__':
