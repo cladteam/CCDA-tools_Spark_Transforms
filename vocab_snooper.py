@@ -24,7 +24,8 @@ from collections import defaultdict
 
 
 # Global DataFrame to hold codes found
-# Define the list with column headers for the DataFrame, sourced from /All of Us-cdb223/Identified: HIN - HIE/CCDA/transform/mapping-reference-files/ccda-value-set-mapping-table
+# Define the list with column headers for the DataFrame, sourced from 
+#  /All of Us-cdb223/Identified: HIN - HIE/CCDA/transform/mapping-reference-files/ccda-value-set-mapping-table
 # for comparision, edit as necessary per requirements.
 columns = [
     "data_source", "resource", "data_element_path", "data_element_node", 
@@ -43,18 +44,20 @@ def snoop_for_code_tag(tree, expr):
     element_list = tree.xpath(expr)
     vocab_codes = pd.DataFrame(columns=columns)
     for element in element_list:
+
         element_path = tree.getelementpath(element)
-        # Extract attributes
+        # Extract attributes, simplify path, remove namespace and conditionals
+        data_element_path = re.sub(r'{.*?}', '', element_path)
+        data_element_path = re.sub(r'\[.*?\]', '', data_element_path)
+        
         data_element_node = re.sub(r'{.*}', '', element.tag)
-        #src_cd = element.attrib.get('code')
-        #codeSystem = element.attrib.get('codeSystem')
-        #resource = element.attrib.get('codeSystemName')
         src_cd_description = element.attrib.get('displayName')
         src_cd = element.get('code')
         codeSystem = element.get('codeSystem')
         resource = element.get('codeSystemName')
         src_cd_description = element.get('displayName')
         src_cd_unit = ''
+
         if element is not None:
             for sibling in element.itersiblings():
                 if sibling.tag == '{urn:hl7-org:v3}value':
@@ -64,7 +67,9 @@ def snoop_for_code_tag(tree, expr):
             # Use iterancestors() to find <doseQuantity> in any ancestor
             for ancestor in element.iterancestors():
                 # Check if the ancestor contains a <doseQuantity> element
-                if ancestor.tag in ('{urn:hl7-org:v3}author','{urn:hl7-org:v3}informant','{urn:hl7-org:v3}entryRelationship','{urn:hl7-org:v3}entry','{urn:hl7-org:v3}routeCode'):
+                if ancestor.tag in ('{urn:hl7-org:v3}author', '{urn:hl7-org:v3}informant', 
+                                    '{urn:hl7-org:v3}entryRelationship',
+                                    '{urn:hl7-org:v3}entry','{urn:hl7-org:v3}routeCode'):
                     break
                 if ancestor.tag == '{urn:hl7-org:v3}substanceAdministration':
                     dose_quantity_element = ancestor.find('.//{urn:hl7-org:v3}doseQuantity')
@@ -74,6 +79,7 @@ def snoop_for_code_tag(tree, expr):
 
 # Append to vocab_codes DataFrame
         new_row = pd.DataFrame([{
+            'data_element_path': data_element_path,
             'data_element_node': data_element_node,
             'src_cd': src_cd,
             'codeSystem': codeSystem,
