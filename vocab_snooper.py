@@ -2,10 +2,16 @@
 """
     vocab_snooper.py
     
-    INPUT: resources directory of CCDA XML files
+    INPUT: 
+       - (-d) resources directory of CCDA XML files
+       - (-df) dataset of files
+       - (-ds) dataset of strings
+       - (-f) individual file
     OUTPUT: Foundry datasets:
         "vocab_discovered_codes_with_counts"
         "vocab_discovered_codes_expanded" 
+        
+            /All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/eHx_responses/site-smoke-test-responses
 """
 
 import argparse
@@ -18,7 +24,8 @@ import vocab_maps
 import pandas as pd
 from pathlib import Path
 from foundry.transforms import Dataset
-from collections import defaultdict
+from collections import defaultdict 
+import tempfile
 
 # mamba install -y -q lxml
 
@@ -145,9 +152,48 @@ def process_dataset_of_files(dataset_name):
         all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
 
     return all_vocab_codes
-            
-        
+
+
+def process_dataset_of_strings(dataset_name):
+    print(f"DATA SET NAME: {dataset_name}")
+    all_vocab_codes = pd.DataFrame(columns=columns)
+    
+    ccda_ds = Dataset.get(dataset_name)
+    ccda_df = ccda_ds.read_table(format='pandas')
+    #'timestamp', 'mspi', 'site', 'status_code', 'response_text',
+    # FOR EACH ROW
+    if True:
+        text=ccda_df.iloc[0,4]
+        print("====")
+        doc_regex = re.compile(r'(<ClinicalDocument.*?</ClinicalDocument>)', re.DOTALL)
+        # (don't close the opening tag because it has attributes)
+        # works: doc_regex = re.compile(r'(<section>.*?</section>)', re.DOTALL)
+        # FOR EACH "DOC" in this row (hopefully just 1)
+        i=0
+        for match in doc_regex.finditer(text):
+            match_tuple = match.groups(0)
+            print(f"LENGTH {i}  {len(match_tuple[0])}")
+            with open(f"/home/user/repo/debug_file_{i}.xml", 'w') as f:
+                f.write(match_tuple[0])
+            i=i+1
+                
+            with tempfile.NamedTemporaryFile() as temp:
+                file_path = temp.name
+                with open(file_path, 'w') as f:
+                    f.write(match_tuple[0]) # .encode())
+                    f.seek(0)
+                    
+                    file_vocab_codes = process_xml_file(file_path)
+                    all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
+                    
+    return all_vocab_codes
+
+    
 def create_derived_datasets(vocab_discovered_codes_expanded):
+    """
+    Using the "expanded" table, this creates the narrow version and the one with counts,
+    and writes CSVs for all three.
+    """
     vocab_discovered_codes_expanded.to_csv("vocab_discovered_codes_expanded.csv")
     
     vocab_discovered_codes = vocab_discovered_codes_expanded[['src_cd', 'codeSystem']].drop_duplicates()
@@ -162,6 +208,7 @@ def create_derived_datasets(vocab_discovered_codes_expanded):
     
     return(vocab_discovered_codes_with_counts, vocab_discovered_codes)
 
+
 def export_to_hdfs(codes, codes_with_counts, codes_expanded):
         ds = Dataset.get("vocab_discovered_codes")
         ds.write_table(codes)
@@ -172,8 +219,11 @@ def export_to_hdfs(codes, codes_with_counts, codes_expanded):
         ds = Dataset.get("vocab_discovered_codes_expanded")
         ds.write_table(codes_expanded)
 
-def code_entry_point(dataset_name):
-    """ similar to main() but for calling from code, not command line
+
+def code_entry_point_files(dataset_name):
+    """ 
+    Similar to main() but for calling from code, not command line
+    This one is for processing a dataset of files.
     """
     vocab_discovered_codes_expanded = process_dataset_of_files(dataset_name)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
@@ -181,6 +231,18 @@ def code_entry_point(dataset_name):
     export_to_hdfs(vocab_discovered_codes,
                    vocab_discovered_codes_with_counts, 
                    vocab_discovered_codes_expanded)
+    
+def code_entry_point_strings(dataset_name):
+    """ 
+    Similar to main() but for calling from code, not command line
+    This one is for processing a dataset of strings.
+    """
+    vocab_discovered_codes_expanded = process_dataset_of_strings(dataset_name)
+    (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
+        create_derived_datasets(vocab_discovered_codes_expanded)
+#    export_to_hdfs(vocab_discovered_codes,
+#                   vocab_discovered_codes_with_counts, 
+#                   vocab_discovered_codes_expanded)
 
 def main():
     """
@@ -194,7 +256,8 @@ def main():
     group.add_argument('-f', '--filename', help="Filename of the XML file to parse")
     group.add_argument('-d', '--directory', help="Directory containing XML files to parse")
     parser.add_argument('-x', '--export', action=argparse.BooleanOptionalAction, help="export to foundry")
-    group.add_argument('-ds', '--dataset', help="dataset to parse")
+    group.add_argument('-ds', '--dataset_strings', help="dataset of strings to parse")
+    group.add_argument('-df', '--dataset_files', help="dataset of files to parse")
     args = parser.parse_args()
 
     if not args.filename and not args.directory:
@@ -209,8 +272,10 @@ def main():
     elif args.directory:
         print(f"Processing all files in directory: {args.directory}")
         vocab_discovered_codes_expanded = process_directory(args.directory)
-    elif args.dataset:
-        vocab_discovered_codes_expanded = process_dataset_of_files(args.dataset)
+    elif args.dataset_files:
+        vocab_discovered_codes_expanded = process_dataset_of_files(args.dataset_files)
+    elif args.dataset_strings:
+        vocab_discovered_codes_expanded = process_dataset_of_strings(args.dataset_strings)
     
 
     # Output Datasets to Foundry HDFS
@@ -221,4 +286,6 @@ def main():
     
 
 if __name__ == '__main__':
-    main()
+     main()
+#      process_dataset_of_files('ccda_documents')
+#     code_entry_point_strings('ehx_ccda_response_example_copy')
