@@ -35,19 +35,25 @@ import tempfile
 #  /All of Us-cdb223/Identified: HIN - HIE/CCDA/transform/mapping-reference-files/ccda-value-set-mapping-table
 # for comparision, edit as necessary per requirements.
 columns = [
-    "data_source", "resource", "data_element_path", "data_element_node", 
-    "codeSystem", "src_cd", "src_cd_description","src_cd_unit","src_cd_count", "target_concept_id", 
-    "target_concept_name", "target_domain_id", "target_vocabulary_id", 
-    "target_concept_class_id", "target_standard_concept", "target_concept_code", 
-   "target_tbl_column_name", "notes", "counts"
+    "data_source",        # CCDA XML filename
+    "resource",           # @codeSystemName
+    "data_element_path",  # XPath to element
+    "data_element_node",  # just the last tag
+    "codeSystem",         # @codeSystem, vocabulary OID
+    "src_cd",             # @code
+    "src_cd_description", # @displayName
+    "src_cd_unit",        # n/a
+    "src_cd_count", 
+    "notes", 
+    "counts"
 ]
 
 def snoop_for_code_tag(tree, expr):
     """
-    Finds all elements matching the XPath expression (expr) in the XML tree and extracts relevant attributes.
-    Appends the extracted information to the given vocab_codes DataFrame.
+    Finds all elements matching the XPath expression (expr) in the 
+    XML tree and extracts relevant attributes.
+    Appends the extracted information in a dataframe.
     """
-    #section_elements = tree.findall(expr, ns)
     element_list = tree.xpath(expr)
     vocab_codes = pd.DataFrame(columns=columns)
     for element in element_list:
@@ -58,8 +64,10 @@ def snoop_for_code_tag(tree, expr):
         data_element_path = re.sub(r'\[.*?\]', '', data_element_path)
         
         data_element_node = re.sub(r'{.*}', '', element.tag)
-        src_cd_description = element.attrib.get('displayName')
+        src_cd_description = element.get('displayName')
         src_cd = element.get('code')
+        if src_cd is not None:
+            src_cd = src_cd.strip()
         codeSystem = element.get('codeSystem')
         resource = element.get('codeSystemName')
         src_cd_description = element.get('displayName')
@@ -69,22 +77,25 @@ def snoop_for_code_tag(tree, expr):
             for sibling in element.itersiblings():
                 if sibling.tag == '{urn:hl7-org:v3}value':
                     src_cd_unit = sibling.get('unit')               
-        
+                    
+        # Use iterancestors() to find <doseQuantity> in any ancestor
+        # Why not a directpath of sorts to a substanceAdministartion/doseQuantity?
+        # why does the above sibling code not work? FIX TODO
         if element is not None:
-            # Use iterancestors() to find <doseQuantity> in any ancestor
             for ancestor in element.iterancestors():
-                # Check if the ancestor contains a <doseQuantity> element
-                if ancestor.tag in ('{urn:hl7-org:v3}author', '{urn:hl7-org:v3}informant', 
+                if ancestor.tag in ('{urn:hl7-org:v3}author',
+                                    '{urn:hl7-org:v3}informant',
                                     '{urn:hl7-org:v3}entryRelationship',
-                                    '{urn:hl7-org:v3}entry','{urn:hl7-org:v3}routeCode'):
-                    break
+                                    '{urn:hl7-org:v3}entry',
+                                    '{urn:hl7-org:v3}routeCode'):
+                    break  # why kill the loop?
                 if ancestor.tag == '{urn:hl7-org:v3}substanceAdministration':
                     dose_quantity_element = ancestor.find('.//{urn:hl7-org:v3}doseQuantity')
                     if dose_quantity_element is not None:
                         src_cd_unit = dose_quantity_element.get('unit')
                         break
 
-# Append to vocab_codes DataFrame
+        # Append to vocab_codes DataFrame
         new_row = pd.DataFrame([{
             'data_element_path': data_element_path,
             'data_element_node': data_element_node,
@@ -103,21 +114,17 @@ def snoop_for_code_tag(tree, expr):
 
 def process_xml_file(file_path):
     """
-    Process a single XML file, extract code elements, and return the resulting DataFrame.
+    Process a single XML file, extract elements with codeSystem attributes
+    Returns dataframe create in snoop_for_code_tag()
     """
     try:
         tree = ET.parse(file_path)
     except FileNotFoundError:
         print(f"Error: File {file_path} not found.")
-        return pd.DataFrame()  # Return an empty DataFrame
+        return pd.DataFrame() 
     except ET.XMLSyntaxError:
         print(f"Error: Failed to parse {file_path}.")
-        return pd.DataFrame()  # Return an empty DataFrame
-
-    #vocab_codes = snoop_for_code_tag(tree, ".//code", concept_df, vocab_codes)
-    # would need to concatenate and consider duplicates between the two, while leaving duplicates
-    # within on... Do we need both?
-
+        return pd.DataFrame() 
 
     vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
@@ -259,10 +266,6 @@ def main():
     group.add_argument('-ds', '--dataset_strings', help="dataset of strings to parse")
     group.add_argument('-df', '--dataset_files', help="dataset of files to parse")
     args = parser.parse_args()
-
-    if not args.filename and not args.directory:
-        print("Error: You must provide either a filename or a directory.")
-        return
 
     all_vocab_codes = pd.DataFrame()
 
