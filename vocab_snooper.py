@@ -252,12 +252,15 @@ def create_derived_datasets(vocab_discovered_codes_expanded):
 
 
 def export_to_hdfs(codes, codes_with_counts, codes_expanded):
+        print("exporting vocab_discovered_codes")
         ds = Dataset.get("vocab_discovered_codes")
         ds.write_table(codes)
         
+        print("exporting vocab_discovered_codes_with_counts")
         ds = Dataset.get("vocab_discovered_codes_with_counts")
         ds.write_table(codes_with_counts)
-
+        
+        print("exporting vocab_discovered_codes_expanded")
         ds = Dataset.get("vocab_discovered_codes_expanded")
         ds.write_table(codes_expanded)
 
