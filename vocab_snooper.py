@@ -55,59 +55,91 @@ def snoop_for_code_tag(tree, expr):
     Appends the extracted information in a dataframe.
     """
     element_list = tree.xpath(expr)
-    vocab_codes = pd.DataFrame(columns=columns)
+    ## vocab_codes = pd.DataFrame(columns=columns)
+    ele_count=0
+
+    data_element_path_list=[]   
+    data_element_node_list=[]  
+    src_cd_list=[]   
+    src_cd_unit_list=[]   
+    codeSystem_list=[]
+    resource_list=[] 
+    src_cd_description_list=[]
+    
     for element in element_list:
+        ele_count += 1
+        if ele_count % 1000 == 0:
+            print(f"element count: {ele_count}")
 
         element_path = tree.getelementpath(element)
         # Extract attributes, simplify path, remove namespace and conditionals
         data_element_path = re.sub(r'{.*?}', '', element_path)
         data_element_path = re.sub(r'\[.*?\]', '', data_element_path)
+        data_element_path_list.append(data_element_path)
         
         data_element_node = re.sub(r'{.*}', '', element.tag)
+        data_element_node_list.append(data_element_node)
+
         src_cd_description = element.get('displayName')
+        src_cd_description_list.append(src_cd_description)
+
         src_cd = element.get('code')
         if src_cd is not None:
             src_cd = src_cd.strip()
-        codeSystem = element.get('codeSystem')
-        resource = element.get('codeSystemName')
-        src_cd_description = element.get('displayName')
-        src_cd_unit = ''
+        src_cd_list.append(src_cd)
 
-        if element is not None:
+        codeSystem = element.get('codeSystem')
+        codeSystem_list.append(codeSystem)
+
+        resource = element.get('codeSystemName')
+        resource_list.append(resource)
+
+        src_cd_unit=None
+        if  element is not None:
             for sibling in element.itersiblings():
                 if sibling.tag == '{urn:hl7-org:v3}value':
                     src_cd_unit = sibling.get('unit')               
-                    
-        # Use iterancestors() to find <doseQuantity> in any ancestor
-        # Why not a directpath of sorts to a substanceAdministartion/doseQuantity?
-        # why does the above sibling code not work? FIX TODO
-        if element is not None:
-            for ancestor in element.iterancestors():
-                if ancestor.tag in ('{urn:hl7-org:v3}author',
-                                    '{urn:hl7-org:v3}informant',
-                                    '{urn:hl7-org:v3}entryRelationship',
-                                    '{urn:hl7-org:v3}entry',
-                                    '{urn:hl7-org:v3}routeCode'):
-                    break  # why kill the loop?
-                if ancestor.tag == '{urn:hl7-org:v3}substanceAdministration':
-                    dose_quantity_element = ancestor.find('.//{urn:hl7-org:v3}doseQuantity')
-                    if dose_quantity_element is not None:
-                        src_cd_unit = dose_quantity_element.get('unit')
-                        break
+        src_cd_unit_list.append(src_cd_unit)
 
-        # Append to vocab_codes DataFrame
-        new_row = pd.DataFrame([{
-            'data_element_path': data_element_path,
-            'data_element_node': data_element_node,
-            'src_cd': src_cd,
-            'codeSystem': codeSystem,
-            'resource': resource,
-            'src_cd_description': src_cd_description,
-            'src_cd_unit': src_cd_unit,
+    data_source_list=[None] * ele_count
+    src_cd_count_list=[None] * ele_count
+    notes_list=[None] * ele_count
+    counts_list=[None] * ele_count
 
-        }])
-        # Concatenate the new row with the DataFrame
-        vocab_codes = pd.concat([vocab_codes, new_row], ignore_index=True)
+    vocab_codes = pd.DataFrame({
+        "data_source": data_source_list,
+        "resource": resource_list,
+        "data_element_path": data_element_path_list,
+        "data_element_node": data_element_node_list,
+        "codeSystem": codeSystem_list,
+        "src_cd": src_cd_list,
+        "src_cd_description": src_cd_description_list,
+        "src_cd_unit": src_cd_unit_list, 
+        "src_cd_count": src_cd_count_list,
+        "notes": notes_list,
+        "counts": counts_list
+        })
+
+#### DEBUG
+#                    
+#        # Use iterancestors() to find <doseQuantity> in any ancestor
+#        # Why not a directpath of sorts to a substanceAdministartion/doseQuantity?
+#        # why does the above sibling code not work? FIX TODO
+#
+#        if element is not None:
+#            for ancestor in element.iterancestors():
+#                if ancestor.tag in ('{urn:hl7-org:v3}author',
+#                                    '{urn:hl7-org:v3}informant',
+#                                    '{urn:hl7-org:v3}entryRelationship',
+#                                    '{urn:hl7-org:v3}entry',
+#                                    '{urn:hl7-org:v3}routeCode'):
+#                    break  # why kill the loop?
+#                if ancestor.tag == '{urn:hl7-org:v3}substanceAdministration':
+#                    dose_quantity_element = ancestor.find('.//{urn:hl7-org:v3}doseQuantity')
+#                    if dose_quantity_element is not None:
+#                        src_cd_unit = dose_quantity_element.get('unit')
+#                        break
+
 
     return vocab_codes
 
@@ -118,6 +150,7 @@ def process_xml_file(file_path):
     Returns dataframe create in snoop_for_code_tag()
     """
     try:
+        print(f"ET parsing {file_path}")
         tree = ET.parse(file_path)
     except FileNotFoundError:
         print(f"Error: File {file_path} not found.")
@@ -126,8 +159,10 @@ def process_xml_file(file_path):
         print(f"Error: Failed to parse {file_path}.")
         return pd.DataFrame() 
 
+    print(f"Snooping {file_path}")
     vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
+    print(f"Completed {file_path}")
 
     return vocab_codes
 
@@ -262,7 +297,7 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-f', '--filename', help="Filename of the XML file to parse")
     group.add_argument('-d', '--directory', help="Directory containing XML files to parse")
-    parser.add_argument('-x', '--export', action=argparse.BooleanOptionalAction, help="export to foundry")
+    parser.add_argument('-x', '--export', action=argparse.BooleanOptionalAction, help="export to foundry and write CSV")
     group.add_argument('-ds', '--dataset_strings', help="dataset of strings to parse")
     group.add_argument('-df', '--dataset_files', help="dataset of files to parse")
     args = parser.parse_args()
@@ -283,12 +318,17 @@ def main():
 
     # Output Datasets to Foundry HDFS
     if args.export:
+        (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
+        create_derived_datasets(vocab_discovered_codes_expanded)
         export_to_hdfs(vocab_discovered_codes, 
                        vocab_discovered_codes_with_counts, 
                        vocab_discovered_codes_expanded)
+
     
 
 if __name__ == '__main__':
-     main()
+    main()
+
 #      process_dataset_of_files('ccda_documents')
 #     code_entry_point_strings('ehx_ccda_response_example_copy')
+#    code_entry_point_files('ccda_response_files')
