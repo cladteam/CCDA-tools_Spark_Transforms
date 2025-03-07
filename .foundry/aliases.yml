@@ -12,6 +12,7 @@ count_vocab_by_section:
   rid: "ri.foundry.main.dataset.70caf6d9-1abd-4142-aab2-f020f8cefcd0"
 dq_ccda_snooper_people:
   rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
+  branch: "master"
 dq_ccda_snooper_section:
   rid: "ri.foundry.main.dataset.8d82891b-9f5c-4967-a27c-6791bc982a69"
 ehx_ccda_response_example_copy:

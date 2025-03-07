@@ -1,4 +1,11 @@
-inputs: []
+inputs:
+- alias: "ccda_response_files"
+  properties:
+    type: "dataset"
+    dataset:
+      rid: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
+      branch: "master"
+      assumedMarkings: []
 outputs:
 - alias: "dq_ccda_snooper_section"
   properties:
@@ -10,7 +17,7 @@ runtime:
   managedContainer:
     identifier: "code-workspaces-jupyter-python-3_9-image"
     command: "/opt/palantir/transforms.d/run-ipynb.sh"
-    filePath: "create_dataset-dq_ccda_snooper_section.ipynb"
+    filePath: "dq_ccda_snooper_section.ipynb"
     envVars:
       ENABLE_CODE_BUDDY: "false"
       ENABLE_MANAGED_CONDA_ENVIRONMENTS: "true"

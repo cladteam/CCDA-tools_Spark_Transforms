@@ -5,6 +5,7 @@ source:
   path: ../src
 requirements:
   run:
+  - tabulate
   - dash
   - lxml
   - duckdb
