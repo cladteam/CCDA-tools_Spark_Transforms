@@ -48,6 +48,22 @@ columns = [
     "counts"
 ]
 
+concepts_introduced_in_mapping = [
+    {   # pregnancy
+        "data_source": "mapping",
+        "resource":    "mapping",
+        "data_element_path": None ,
+        "data_element_node": None, 
+        "codeSystem": "2.16.840.1.113883.6.96",        
+        "src_cd": "289908002",           
+        "src_cd_description": None ,
+        "src_cd_unit": None,
+        "src_cd_count": None, 
+        "notes": None, 
+        "counts": None
+    }
+]
+
 def snoop_for_code_tag(tree, expr):
     """
     Finds all elements matching the XPath expression (expr) in the 
@@ -144,6 +160,12 @@ def snoop_for_code_tag(tree, expr):
     return vocab_codes
 
 
+def add_concepts_introduced_in_mapping(df):
+    new_concepts_df = pd.DataFrame(concepts_introduced_in_mapping)
+    df = pd.concat([df, new_concepts_df], ignore_index=True)
+    return df
+    
+
 def process_xml_file(file_path):
     """
     Process a single XML file, extract elements with codeSystem attributes
@@ -163,6 +185,8 @@ def process_xml_file(file_path):
     vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
     print(f"Completed {file_path}")
+
+    vocab_codes  = add_concepts_introduced_in_mapping(vocab_codes)
 
     return vocab_codes
 
@@ -192,7 +216,7 @@ def process_dataset_of_files(dataset_name):
         print(f"\n\nPROCESSING {os.path.basename(filepath)}\n")
         file_vocab_codes = process_xml_file(filepath)
         all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
-
+        
     return all_vocab_codes
 
 
@@ -271,6 +295,7 @@ def code_entry_point_files(dataset_name):
     This one is for processing a dataset of files.
     """
     vocab_discovered_codes_expanded = process_dataset_of_files(dataset_name)
+    vocab_discovered_codes_expanded.drop_duplicates(inplace=True)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
         create_derived_datasets(vocab_discovered_codes_expanded)
     export_to_hdfs(vocab_discovered_codes,
@@ -283,6 +308,7 @@ def code_entry_point_strings(dataset_name):
     This one is for processing a dataset of strings.
     """
     vocab_discovered_codes_expanded = process_dataset_of_strings(dataset_name)
+    vocab_discovered_codes_expanded.drop_duplicates(inplace=True)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
         create_derived_datasets(vocab_discovered_codes_expanded)
 #    export_to_hdfs(vocab_discovered_codes,
@@ -320,6 +346,7 @@ def main():
     
 
     # Output Datasets to Foundry HDFS
+    vocab_discovered_codes_expanded.drop_duplicates(inplace=True)
     if args.export:
         (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
         create_derived_datasets(vocab_discovered_codes_expanded)
