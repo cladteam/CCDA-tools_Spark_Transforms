@@ -9,11 +9,15 @@
 import os
 import pandas as pd
 import argparse
+import logging
 import re
 import lxml.etree as ET
 from xml_ns import ns
 from collections import defaultdict
 from foundry.transforms import Dataset
+
+logger = logging.getLogger(__name__)
+
 
 # Output dataset columns
 df_columns = [  
@@ -43,103 +47,142 @@ def process_xml_file(file_path):
         persons in the file
     """
     with open(file_path, 'rb') as file:
-        tree = ET.parse(file)
+        tree = ET.parse(file_path)
+        try:
+            logger.info(f"ET parsing {file_path}")
+            tree = ET.parse(file_path)
+        except FileNotFoundError:
+            logger.error(f"File {file_path} not found.")
+            return data_records
+        except ET.XMLSyntaxError as e:
+            logger.error(f"SyntaxError: Failed to parse (syntax error) {file_path}. {e}")
+            return data_records
+        except Exception as e:
+            logger.error(f"Exception: Failed to parse (other) {file_path} {e}")
+            return data_records
+        except Error as e:
+            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
+            return data_records
+
     
-    """
-    Extracts structured data from CCDA XML sections and returns a DataFrame.
-    Returns: pd.DataFrame
-    """
-
-    # Initialize an empty list
-    records = []
+        """
+        Extracts structured data from CCDA XML sections and returns a DataFrame.
+        Returns: pd.DataFrame
+        """
     
-    # Find all 'section' elements in the XML tree using the specified namespace
-    section_elements = tree.findall(".//section", ns)
+        # Initialize an empty list
+        records = []
+        
+        # Find all 'section' elements in the XML tree using the specified namespace
+        section_elements = tree.findall(".//section", ns)
 
-    for section_element in section_elements:
-        # Default section template ID if not found
-        section_template_id = "n/a"
+        section_i=0
+        for section_element in section_elements:
+            section_i += 1
+            if section_i % 100 == 0:
+                print(f"{os.path.basename(file_path)} section: {section_i} \n")
 
-        # Extract templateId from the section (if available)
-        section_template_ele = section_element.findall("templateId", ns)
-        if len(section_template_ele) > 0:
-            section_template_id = section_template_ele[0].get('root')
+            # Default section template ID if not found
+            section_template_id = "n/a"
+    
+            # Extract templateId from the section (if available)
+            section_template_ele = section_element.findall("templateId", ns)
+            if len(section_template_ele) > 0:
+                section_template_id = section_template_ele[0].get('root')
+    
+            # Extract section code and display name
+            section_code = section_element.findall("code", ns)[0].get('code')
+            section_name = section_element.findall("code", ns)[0].get('displayName')
+    
+            # Find all 'entry' elements within the section
+            # FINDALL entry
+            entry_elements = section_element.findall("entry", ns)
+    
+            entry_i=0
+            for entry_ele in entry_elements:
+                entry_i += 1
+                if entry_i % 100 == 0:
+                    print(f"{os.path.basename(file_path)} section: {section_i}  entry: {entry_i}  \n")
+    
+                # Dictionary to store extracted values, grouped by XML path
+                value_dict = defaultdict(list)
+                code_dict = defaultdict(list)
+    
+                # Extract all 'value' elements within the entry
+                ## FINALL value
+                value_elements = entry_ele.findall(".//value", ns)
+                value_i=0
+                for value_ele in value_elements:
+                    value_i += 1
+                    if value_i % 100 == 0:
+                        print(f"{os.path.basename(file_path)} section: {section_i}  value: {value_i}  \n")
+    
+                    # Clean the XML path (remove namespace references)
+                    value_path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
+                    value_path = "/".join(value_path.split("/")[:-1])  # Get parent path
+    
+                    value_attribs_dict = {}
+                    for (attr, value) in value_ele.attrib.items():
+                        clean_attr = re.sub(r'{.*}', '', attr)
+                        clean_value = re.sub(r'{.*}', '', value)
+                        value_attribs_dict[clean_attr] = clean_value
+    
+                    # Dict of (attribute-dict, text-value) pairs, keyed by path
+                    value_dict[value_path].append((value_attribs_dict, value_ele.text))
 
-        # Extract section code and display name
-        section_code = section_element.findall("code", ns)[0].get('code')
-        section_name = section_element.findall("code", ns)[0].get('displayName')
+                # Extract all 'code' elements within the entry
+                # FINDALL
+                code_elements = entry_ele.findall(".//code", ns)
+                code_i=0
+                for code_ele in code_elements:
+                    code_i += 1
+                    if code_i % 100 == 0:
+                        print(f"{os.path.basename(file_path)} section: {section_i} entry: {entry_i} code:{code_i}  \n")
 
-        # Find all 'entry' elements within the section
-        entry_elements = section_element.findall("entry", ns)
-
-        for entry_ele in entry_elements:
-
-            # Dictionary to store extracted values, grouped by XML path
-            value_dict = defaultdict(list)
-            code_dict = defaultdict(list)
-
-            # Extract all 'value' elements within the entry
-            value_elements = entry_ele.findall(".//value", ns)
-            for value_ele in value_elements:
-
-                # Clean the XML path (remove namespace references)
-                value_path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
-                value_path = "/".join(value_path.split("/")[:-1])  # Get parent path
-
-                value_attribs_dict = {}
-                for (attr, value) in value_ele.attrib.items():
-                    clean_attr = re.sub(r'{.*}', '', attr)
-                    clean_value = re.sub(r'{.*}', '', value)
-                    value_attribs_dict[clean_attr] = clean_value
-
-                # Dict of (attribute-dict, text-value) pairs, keyed by path
-                value_dict[value_path].append((value_attribs_dict, value_ele.text))
-            # Extract all 'code' elements within the entry
-            code_elements = entry_ele.findall(".//code", ns)
-            for code_ele in code_elements:
-                # Clean the XML path (remove namespace references)
-                code_path = re.sub(r'{.*?}', '', tree.getelementpath(code_ele))
-                code_path = "/".join(code_path.split("/")[:-1])  # Get parent path
-                from IPython.display import display
-                code_attribs_dict = {}
-                for (attr, code) in code_ele.attrib.items():
-                    clean_attr = re.sub(r'{.*}', '', attr)
-                    clean_code = re.sub(r'{.*}', '', code)
-                    code_attribs_dict[clean_attr] = clean_code
-
-                # Dict of (attribute-dict, text-value) pairs, keyed by path
-                code_dict[code_path].append((code_attribs_dict, code_ele.text))               
-                
-                code_value_dict = defaultdict(list)
-
-                # Merge code_dict and value_dict
-                for d in (code_dict, value_dict):
-                    for key, value in d.items():
-                        code_value_dict[key].extend(value)  # Preserve list values
-                
-                # Retrieve corresponding value(s) for the code (if any)
-                code_value_tuple_list = code_value_dict[code_path]  # Tuple contains (attributes dictionary, text content)
-                code_value_tuple_list = [t for t in code_value_tuple_list if 'nullFlavor' not in t[0]]
-
-                for code_value_tuple in code_value_tuple_list:
-                    # Construct a new row for the DataFrame
-                    record = {
-                        'source': os.path.basename(file_path), # [12:29],
-                        'section': section_template_id,
-                        'section_code': section_code,
-                        'section_name': section_name,
-                        'path': code_path,
-                        'code': code_ele.get('code',''),
-                        'codeSystem': code_ele.get('codeSystem',''),
-                        'value_type': code_value_tuple[0].get('type', ''),  # Extract 'type' if available
-                        'value_unit': code_value_tuple[0].get('unit', ''),  # Extract 'unit' if available
-                        'value_value': code_value_tuple[0].get('value', ''),  # Extract 'value' if available
-                        'value_code': code_value_tuple[0].get('code', ''),  # Extract 'code' if available
-                        'value_codeSystem': code_value_tuple[0].get('codeSystem', ''),  # Extract 'codeSystem' if available
-                        'value_text': code_value_tuple[1].strip() if code_value_tuple[1] else ''  # Extract and clean text content
-                    }
-                   
-                    records.append(record)
+                    # Clean the XML path (remove namespace references)
+                    code_path = re.sub(r'{.*?}', '', tree.getelementpath(code_ele))
+                    code_path = "/".join(code_path.split("/")[:-1])  # Get parent path
+                    from IPython.display import display
+                    code_attribs_dict = {}
+                    for (attr, code) in code_ele.attrib.items():
+                        clean_attr = re.sub(r'{.*}', '', attr)
+                        clean_code = re.sub(r'{.*}', '', code)
+                        code_attribs_dict[clean_attr] = clean_code
+    
+                    # Dict of (attribute-dict, text-value) pairs, keyed by path
+                    code_dict[code_path].append((code_attribs_dict, code_ele.text))               
+                    
+                    code_value_dict = defaultdict(list)
+    
+                    # Merge code_dict and value_dict
+                    # MERGE??
+                    for d in (code_dict, value_dict):
+                        for key, value in d.items():
+                            code_value_dict[key].extend(value)  # Preserve list values
+                    
+                    # Retrieve corresponding value(s) for the code (if any)
+                    code_value_tuple_list = code_value_dict[code_path]  # Tuple contains (attributes dictionary, text content)
+                    code_value_tuple_list = [t for t in code_value_tuple_list if 'nullFlavor' not in t[0]]
+    
+                    for code_value_tuple in code_value_tuple_list:
+                        # Construct a new row for the DataFrame
+                        record = {
+                            'source': os.path.basename(file_path), # [12:29],
+                            'section': section_template_id,
+                            'section_code': section_code,
+                            'section_name': section_name,
+                            'path': code_path,
+                            'code': code_ele.get('code',''),
+                            'codeSystem': code_ele.get('codeSystem',''),
+                            'value_type': code_value_tuple[0].get('type', ''),  # Extract 'type' if available
+                            'value_unit': code_value_tuple[0].get('unit', ''),  # Extract 'unit' if available
+                            'value_value': code_value_tuple[0].get('value', ''),  # Extract 'value' if available
+                            'value_code': code_value_tuple[0].get('code', ''),  # Extract 'code' if available
+                            'value_codeSystem': code_value_tuple[0].get('codeSystem', ''),  # Extract 'codeSystem' if available
+                            'value_text': code_value_tuple[1].strip() if code_value_tuple[1] else ''  # Extract and clean text content
+                        }
+                       
+                        records.append(record)
             
     return records
 """
@@ -177,7 +220,11 @@ def process_dataset_of_files(dataset):
     """
     ccda_documents_generator = dataset.files()    
     all_records=[]
+    i=0
     for filegen in ccda_documents_generator:
+        i+=1
+        if i%100 == 0:
+            print(f"file number: {i}")
         filepath = filegen.download()
         record_list = process_xml_file(filepath)
         all_records += record_list
@@ -209,6 +256,12 @@ def entry_point_2(dataset, write_flag):
     
     returns a Pandas dataframe
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_section.log",
+        force=True, level=logging.WARNING)
+
     df = process_dataset_of_files(dataset)
    
     if write_flag:
@@ -223,6 +276,12 @@ def entry_point(dataset_read, dataset_write, export_flag, write_flag):
     
     dataset_name is the name of a dataset as seen in the Data tab in Foundry.
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_section.log",
+        force=True, level=logging.WARNING)
+
     df = process_dataset_of_files_by_name(dataset_read)
     if export_flag:
         # Save dataset to HDFS/Spark in Foundry
@@ -246,6 +305,12 @@ def main():
     parser.add_argument('-w', '--write_csv', action=argparse.BooleanOptionalAction, help="export to csv")
     parser.add_argument('-ds', '--dataset_strings', help="dataset of files to parse")
     args = parser.parse_args()
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_section.log",
+        force=True, level=logging.WARNING)
+
     all_vocab_codes = pd.DataFrame()
     if args.dataset_strings:
         entry_point(args.dataset_strings, args.export, args.write_csv)
