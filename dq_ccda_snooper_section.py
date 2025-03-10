@@ -124,7 +124,7 @@ def process_xml_file(file_path):
                 for code_value_tuple in code_value_tuple_list:
                     # Construct a new row for the DataFrame
                     record = {
-                        'source': os.path.basename(file_path)[12:29],
+                        'source': os.path.basename(file_path), # [12:29],
                         'section': section_template_id,
                         'section_code': section_code,
                         'section_name': section_name,
