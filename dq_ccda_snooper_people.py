@@ -9,6 +9,7 @@
 import os
 import pandas as pd
 import argparse
+import logging
 import re
 import lxml.etree as ET
 from xml_ns import ns
@@ -16,6 +17,9 @@ import os
 import vocab_maps
 from collections import defaultdict
 from foundry.transforms import Dataset
+
+logger = logging.getLogger(__name__)
+
 
 
 def process_xml_file(file_path):
@@ -26,26 +30,41 @@ def process_xml_file(file_path):
     data_records = []
     with open(file_path, 'rb') as file:
         tree = ET.parse(file)
+        try:
+            logger.info(f"ET parsing {file_path}")
+            tree = ET.parse(file_path)
+        except FileNotFoundError:
+            logger.error(f"File {file_path} not found.")
+            return data_records
+        except ET.XMLSyntaxError as e:
+            logger.error(f"SyntaxError: Failed to parse (syntax error) {file_path}. {e}")
+            return data_records
+        except Exception as e:
+            logger.error(f"Exception: Failed to parse (other) {file_path} {e}")
+            return data_records
+        except Error as e:
+            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
+            return data_records
 
-    elements = [
-        ('administrativeGenderCode', 'Gender'),
-        ('raceCode', 'Race'),
-        ('ethnicGroupCode', 'Ethnicity'),
-        ('birthTime', 'BirthTime')
-    ]
+        elements = [
+            ('administrativeGenderCode', 'Gender'),
+            ('raceCode', 'Race'),
+            ('ethnicGroupCode', 'Ethnicity'),
+            ('birthTime', 'BirthTime')
+        ]
 
-    # Extract data for each element
-    record = {'Filename': os.path.basename(file_path)}
-    for tag, label in elements:
-        element = tree.find(f'.//hl7:{tag}', namespaces=ns)
-        value = element.get('displayName') if tag != 'birthTime' and element is not None else (
-            element.get('value') if element is not None else 'Unknown'
-        )
-        record[label] = value
-
-        data_records.append(record)
-
-    return data_records
+        # Extract data for each element
+        record = {'Filename': os.path.basename(file_path)}
+        for tag, label in elements:
+            element = tree.find(f'.//hl7:{tag}', namespaces=ns)
+            value = element.get('displayName') if tag != 'birthTime' and element is not None else (
+                element.get('value') if element is not None else 'Unknown'
+            )
+            record[label] = value
+    
+            data_records.append(record)
+    
+        return data_records
 
 
 
@@ -57,7 +76,11 @@ def process_dataset_of_files(dataset):
     ccda_documents_generator = dataset.files()    
 
     all_records=[]
+    i=0
     for filegen in ccda_documents_generator:
+        i+=1
+        if i%100 == 0:
+            print(f"file number: {i}")
         filepath = filegen.download()
 
         record_list = process_xml_file(filepath)
@@ -94,6 +117,12 @@ def entry_point_2(dataset, write_flag):
     
     returns a Pandas dataframe
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_people.log",
+        force=True, level=logging.WARNING)
+
     df = process_dataset_of_files(dataset)
         
     if write_flag:
@@ -110,6 +139,12 @@ def entry_point(dataset_name, export_flag, write_flag):
     
     dataset_name is the name of a dataset as seen in the Data tab in Foundry.
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_people.log",
+        force=True, level=logging.WARNING)
+
     df = process_dataset_of_files_by_name("ccda_response_files")
 
     if export_flag:
@@ -136,6 +171,12 @@ def main():
     parser.add_argument('-w', '--write_csv', action=argparse.BooleanOptionalAction, help="export to csv")
     parser.add_argument('-ds', '--dataset_strings', help="dataset of files to parse")
     args = parser.parse_args()
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_dq_snooper_people.log",
+        force=True, level=logging.WARNING)
+
 
     all_vocab_codes = pd.DataFrame()
 
