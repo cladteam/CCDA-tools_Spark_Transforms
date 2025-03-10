@@ -15,6 +15,7 @@
 """
 
 import argparse
+import logging
 import re
 import lxml.etree as ET
 import os
@@ -27,8 +28,7 @@ from foundry.transforms import Dataset
 from collections import defaultdict 
 import tempfile
 
-# mamba install -y -q lxml
-
+logger = logging.getLogger(__name__)
 
 # Global DataFrame to hold codes found
 # Define the list with column headers for the DataFrame, sourced from 
@@ -84,8 +84,6 @@ def snoop_for_code_tag(tree, expr):
     
     for element in element_list:
         ele_count += 1
-        if ele_count % 1000 == 0:
-            print(f"element count: {ele_count}")
 
         element_path = tree.getelementpath(element)
         # Extract attributes, simplify path, remove namespace and conditionals
@@ -172,19 +170,20 @@ def process_xml_file(file_path):
     Returns dataframe create in snoop_for_code_tag()
     """
     try:
-        print(f"ET parsing {file_path}")
+        logger.info(f"ET parsing {file_path}")
         tree = ET.parse(file_path)
-    except FileNotFoundError:
-        print(f"Error: File {file_path} not found.")
+    except FileNotFoundError as e:
+        logger.error(f"File {file_path} not found. {e}")
         return pd.DataFrame() 
-    except ET.XMLSyntaxError:
-        print(f"Error: Failed to parse {file_path}.")
+    except ET.XMLSyntaxError as se:
+        logger.error(f"Failed to parse {file_path}. {se}")
+        return pd.DataFrame() 
+    except Exception as o:
+        logger.error(f"Failed to parse {file_path}. {o}")
         return pd.DataFrame() 
 
-    print(f"Snooping {file_path}")
     vocab_codes = snoop_for_code_tag(tree, ".//*[@codeSystem]")
     vocab_codes['data_source'] = os.path.basename(file_path)
-    print(f"Completed {file_path}")
 
     vocab_codes  = add_concepts_introduced_in_mapping(vocab_codes)
 
@@ -211,9 +210,13 @@ def process_dataset_of_files(dataset_name):
     
     ccda_documents = Dataset.get(dataset_name)
     ccda_documents_generator = ccda_documents.files()    
+    i=0
     for filegen in ccda_documents_generator:
+        i+=1
+        if i%100 == 0:
+            print(f"file number: {i}")
+
         filepath = filegen.download()
-        print(f"\n\nPROCESSING {os.path.basename(filepath)}\n")
         file_vocab_codes = process_xml_file(filepath)
         all_vocab_codes = pd.concat([all_vocab_codes, file_vocab_codes], ignore_index=True)
         
@@ -294,6 +297,12 @@ def code_entry_point_files(dataset_name):
     Similar to main() but for calling from code, not command line
     This one is for processing a dataset of files.
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_vocab_snooper.log",
+        force=True, level=logging.WARNING)
+
     vocab_discovered_codes_expanded = process_dataset_of_files(dataset_name)
     vocab_discovered_codes_expanded.drop_duplicates(inplace=True)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
@@ -307,6 +316,12 @@ def code_entry_point_strings(dataset_name):
     Similar to main() but for calling from code, not command line
     This one is for processing a dataset of strings.
     """
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_vocab_snooper.log",
+        force=True, level=logging.WARNING)
+
     vocab_discovered_codes_expanded = process_dataset_of_strings(dataset_name)
     vocab_discovered_codes_expanded.drop_duplicates(inplace=True)
     (vocab_discovered_codes_with_counts, vocab_discovered_codes) = \
@@ -330,6 +345,11 @@ def main():
     group.add_argument('-ds', '--dataset_strings', help="dataset of strings to parse")
     group.add_argument('-df', '--dataset_files', help="dataset of files to parse")
     args = parser.parse_args()
+
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s',
+        filename=f"log_vocab_snooper.log",
+        force=True, level=logging.WARNING)
 
     all_vocab_codes = pd.DataFrame()
 
