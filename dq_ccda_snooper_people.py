@@ -107,7 +107,7 @@ def process_dataset_of_files_by_name(dataset_name):
     df = pd.DataFrame(all_records)
     return df
 
-def entry_point_2(dataset, write_flag):
+def entry_point_2(dataset, export_flag, write_flag):
     """
     A function to call into this functionality, usefull for
     calling from a notebook. 
@@ -124,6 +124,12 @@ def entry_point_2(dataset, write_flag):
         force=True, level=logging.WARNING)
 
     df = process_dataset_of_files(dataset)
+        
+    if export_flag:
+        # Save dataset to HDFS/Spark in Foundry
+        dq_ccda_snooper_people = Dataset.get("dq_ccda_snooper_people")
+        dq_ccda_snooper_people.write_table(df)
+        print(f"wrote dq_ccda_snooper_people dataset")
         
     if write_flag:
         df.to_csv("dq_ccda_snooper_people.csv")
