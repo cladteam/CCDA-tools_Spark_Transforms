@@ -42,7 +42,7 @@ code_exclusion_list = [
 ]
 
 
-def snoop_for_tag(starting_ele, tag):
+def snoop_for_tag(starting_ele, tag, tree):
     """
         finds all tagged elements below the passed-in starting_ele
 
@@ -52,12 +52,18 @@ def snoop_for_tag(starting_ele, tag):
         returns:  {path:( {attr: attr-value}, text-value)  }
     """
 
-    value_dict = defaultdict(list)
+    
+    
+### PROBLEM: I coded without this list!!!    
+####    value_dict = defaultdict(list)
+    value_dict = {}
+    
+    
     elements = starting_ele.findall(f".//{tag}", ns)
     for value_ele in elements:
 
         # Clean the XML path (remove namespace references)
-        value_path = re.sub(r'{.*?}', '', starting_ele.getelementpath(value_ele))
+        value_path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
         value_path = "/".join(value_path.split("/")[:-1])  # Get parent path
 
         value_attribs_dict = defaultdict(str)
@@ -66,12 +72,26 @@ def snoop_for_tag(starting_ele, tag):
             clean_value = re.sub(r'{.*}', '', value)
             value_attribs_dict[clean_attr] = clean_value
 
-    value_dict[value_path].append((value_attribs_dict, value_ele.text))
+        value_dict[value_path].append((value_attribs_dict, value_ele.text))
 
     return value_dict
 
+#returned
+#defaultdict(<class 'list'>, 
+#            {'component/structuredBody/component[1]/section/entry[1]/act': 
+#n             [(defaultdict(<class 'str'>, {
+#                 'code': '48768-6',
+#                 'displayName': 'Payment Sources', 
+#                 'codeSystem': '2.16.840.1.113883.6.1', 
+#                 'codeSystemName': 'LN'}
+#                          ), None)], 
+#             'component/structuredBody/component[1]/section/entry[1]/act/entryRelationship/act': [(defaultdict(<class 'str'>, {'nullFlavor': 'OTH'}), #None)], 
+#             'component/structuredBody/component[1]/section/entry[1]/act/entryRelationship/act/performer/assignedEntity': [(defaultdict(<class 'str'>, ##{'code': 'PAYOR', 'displayName': 'Payor', 'codeSystem': '2.16.840.1.113883.5.110', 'codeSystemName': 'RoleClass'}), None)], 
+#            'component/structuredBody/component[1]/section/entry[1]/act/entryRelationship/act/participant[1]/participantRole': [(defaultdict(<class #'str'>, {'code': 'SEL', 'codeSystem': '2.16.840.1.113883.5.111', 'codeSystemName': 'RoleCode', 'displayName': 'Self'}), None)], 
+#             'component/structuredBody/component[1]/section/entry[1]/act/entryRelationship/act/entryRelationship/act': [(defaultdict(<class 'str'>, ##{'nullFlavor': 'UNK'}), None)]})
 
-def snoop_sections(tree):
+
+def snoop_sections(tree, file_path):
     # Initialize an empty list
     records = []
     
@@ -88,8 +108,9 @@ def snoop_sections(tree):
 
         entry_elements = section_element.findall("entry", ns)
         for entry_ele in entry_elements:
-            code_dict = snoop_for_tag(entry_ele, "code")
-            value_dict = snoop_for_tag(entry_ele, "value")
+            code_dict = snoop_for_tag(entry_ele, "code", tree)
+            value_dict = snoop_for_tag(entry_ele, "value", tree)
+            print(code_dict)
             #   {path:( {attr: attr-value}, text-value)  }
             for code_path in code_dict:
                 record = {
@@ -207,7 +228,7 @@ def process_xml_file(file_path):
         Returns: pd.DataFrame
         """
     
-        return snoop_sections(tree)
+        return snoop_sections(tree, file_path)
     
     
      
