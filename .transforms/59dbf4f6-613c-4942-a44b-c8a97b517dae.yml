@@ -4,7 +4,6 @@ inputs:
     type: "dataset"
     dataset:
       rid: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
-      branch: "master"
       assumedMarkings: []
 outputs:
 - alias: "dq_ccda_snooper_section"
@@ -26,6 +25,6 @@ runtime:
       ENABLE_WRITE_BRANCH_PREFIX: "false"
       UPLOAD_CODE_CHECKPOINTS: "true"
 resources:
-  cpu: "1"
+  cpu: "4"
   memory: "8G"
 shouldArchiveLogsToOutputs: false
