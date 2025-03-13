@@ -68,7 +68,7 @@ def process_xml_file(file_path):
 
 
 
-def process_dataset_of_files(dataset):
+def process_dataset_of_files(dataset, limit):
     """
         snoops each file for records
         returns a dataframe of records
@@ -85,7 +85,10 @@ def process_dataset_of_files(dataset):
 
         record_list = process_xml_file(filepath)
         all_records += record_list
-
+        
+        if i == limit:
+            break
+            
     df = pd.DataFrame(all_records)
     return df
 
@@ -107,7 +110,7 @@ def process_dataset_of_files_by_name(dataset_name):
     df = pd.DataFrame(all_records)
     return df
 
-def entry_point_2(dataset, export_flag, write_flag):
+def entry_point_2(dataset, export_flag, write_flag, limit=0):
     """
     A function to call into this functionality, usefull for
     calling from a notebook. 
@@ -123,7 +126,7 @@ def entry_point_2(dataset, export_flag, write_flag):
         filename=f"log_dq_snooper_people.log",
         force=True, level=logging.WARNING)
 
-    df = process_dataset_of_files(dataset)
+    df = process_dataset_of_files(dataset, limit)
         
     if export_flag:
         # Save dataset to HDFS/Spark in Foundry

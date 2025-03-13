@@ -231,7 +231,7 @@ def process_dataset_of_files(dataset):
     df = pd.DataFrame(all_records)
     return df
 
-def process_dataset_of_files_by_name(dataset_name):
+def process_dataset_of_files_by_name(dataset_name, limit):
     """
         snoops each file for records
         returns a dataframe of records
@@ -239,10 +239,16 @@ def process_dataset_of_files_by_name(dataset_name):
     ccda_documents = Dataset.get(dataset_name)
     ccda_documents_generator = ccda_documents.files()    
     all_records=[]
+    file_count=0
     for filegen in ccda_documents_generator:
         filepath = filegen.download()
         record_list = process_xml_file(filepath)
         all_records += record_list
+        file_count += 1
+        
+        if file_count == limit:
+            break
+            
     df = pd.DataFrame(all_records)
     return df
 
@@ -268,7 +274,7 @@ def entry_point_2(dataset, write_flag):
         df.to_csv("dq_ccda_snooper_section.csv", index=False)
     return df
 
-def entry_point(dataset_read, dataset_write, export_flag, write_flag):
+def entry_point(dataset_read, dataset_write, export_flag, write_flag, limit):
     """
     A function to call into this functionality, useful for
     calling from a notebook. 
@@ -282,7 +288,8 @@ def entry_point(dataset_read, dataset_write, export_flag, write_flag):
         filename=f"log_dq_snooper_section.log",
         force=True, level=logging.WARNING)
 
-    df = process_dataset_of_files_by_name(dataset_read)
+    df = process_dataset_of_files_by_name(dataset_read, limit)
+    
     if export_flag:
         # Save dataset to HDFS/Spark in Foundry
         dq_ccda_snooper_section = Dataset.get(dataset_write)
