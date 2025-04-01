@@ -4,6 +4,9 @@
     Snoops a dataset of CCDA XML files for section info used in DQ.
     
     Output: dq_ccda_snooper_section dataset
+
+    Q: this creates a row for each instance, not a distinct set?
+       It must be, because we use this output to count and create DQ dashboard numbers.
 """   
 
 import os
@@ -242,7 +245,9 @@ def process_dataset_of_files_by_name(dataset_name, limit):
     file_count=0
     for filegen in ccda_documents_generator:
         filepath = filegen.download()
-        record_list = process_xml_file(filepath)
+        print(f" file number {file_count} path:{filepath} gen:{filegen} ")
+        record_list = []
+#        record_list = process_xml_file(filepath)
         all_records += record_list
         file_count += 1
         

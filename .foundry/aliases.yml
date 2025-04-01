@@ -4,6 +4,8 @@ ccda_documents:
   rid: "ri.foundry.main.dataset.877bc6a8-2ec1-4b21-9794-4ad02cc27e30"
 ccda_encounter_code_value_set:
   rid: "ri.foundry.main.dataset.6a83f3d6-4cd6-413b-9db3-9a792118e69f"
+ccda_response_cs_files:
+  rid: "ri.foundry.main.dataset.5f829e1d-0412-449e-bf0a-56a0a7920b06"
 ccda_response_files:
   rid: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
 ccda_value_set_mapping_table_dataset:

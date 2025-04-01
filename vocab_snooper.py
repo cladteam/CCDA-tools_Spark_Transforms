@@ -70,7 +70,7 @@ def snoop_for_code_tag(tree, expr):
     XML tree and extracts relevant attributes.
     Appends the extracted information in a dataframe.
     """
-    element_list = tree.xpath(expr)
+    element_list = tree.xpath(expr) 
     ## vocab_codes = pd.DataFrame(columns=columns)
     ele_count=0
 
@@ -107,13 +107,16 @@ def snoop_for_code_tag(tree, expr):
 
         resource = element.get('codeSystemName')
         resource_list.append(resource)
+ 
+#        print(f" {element_path}" )
 
-        src_cd_unit=None
-        if  element is not None:
-            for sibling in element.itersiblings():
-                if sibling.tag == '{urn:hl7-org:v3}value':
-                    src_cd_unit = sibling.get('unit')               
-        src_cd_unit_list.append(src_cd_unit)
+    # don't need units, and this looks suspiciously slowness inducing
+#        src_cd_unit=None
+#        if  element is not None:
+#            for sibling in element.itersiblings():
+#                if sibling.tag == '{urn:hl7-org:v3}value':
+#                    src_cd_unit = sibling.get('unit')
+#        src_cd_unit_list.append(src_cd_unit)
 
     data_source_list=[None] * ele_count
     src_cd_count_list=[None] * ele_count
