@@ -1,0 +1,40 @@
+name: tools
+run-name: ${{ github.actor }} is testing tools
+on: [push, workflow_dispatch]
+jobs:
+    Run-snoopers:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Check out repository code
+            uses: actions/checkout@v4
+            with:
+              ref: main
+          - name: Check out data
+            run: |
+              eval $(ssh-agent -s)
+              echo "${{ secrets.GH_WF }}" | ssh-add -
+              ssh -T git@github.com   || true
+              git clone git@github.com:chrisroederucdenver/CCDA-data.git
+          - name: housekeeping,  change directory to prototype_2
+            shell: bash
+            run: |
+                ln -s CCDA-data/resources .
+                ls resources
+                ls tools_correct_output
+                mkdir -p snooper_output
+          - name: Run Header Code Snooper
+            run: |
+                python3 section_code_snooper.py -d resources 
+          - name: Run Header Code Snooper
+            run: |
+                python3 header_code_snooper.py -d resources
+          - name: list correct directory
+            run: |
+                ls tools_correct_output
+          - name: list snooper_output directory
+            run: |
+                 ls snooper_output
+          - name: Compare
+            run: |
+                bin/compare_codes.sh
+

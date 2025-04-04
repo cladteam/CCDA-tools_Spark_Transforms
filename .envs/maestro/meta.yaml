@@ -1,0 +1,21 @@
+package:
+  name: '{{ PACKAGE_NAME }}'
+  version: '{{ PACKAGE_VERSION }}'
+source:
+  path: ../src
+requirements:
+  run:
+  - tabulate
+  - dash
+  - lxml
+  - duckdb
+  - vim
+  - dash-table
+  - pandas
+  - polars
+  - numpy
+  - ipykernel
+  - pip
+  - foundry-transforms-lib-python
+  pip:
+  - dashtable

@@ -1,0 +1,22 @@
+{
+  "imageRid" : "ri.foundry-container-service..image.dash-python-3_9-image",
+  "idleTimeout" : "TEN_MINUTES",
+  "resources" : {
+    "cpu" : 1,
+    "gpu" : 0,
+    "memoryInMb" : 8192
+  },
+  "inputs" : [ ],
+  "networkPolicies" : [ ],
+  "environmentVariables" : {
+    "ENABLE_MANAGED_CONDA_ENVIRONMENTS" : "true",
+    "ENABLE_MANAGED_CRAN_ENVIRONMENTS" : "false",
+    "ENABLE_MANAGED_R_CONDA_ENVIRONMENTS" : "false",
+    "ENABLE_WRITE_BRANCH_PREFIX" : "false",
+    "MODULE_NAME" : "application.ccda_explorer_dashboard",
+    "UPLOAD_CODE_CHECKPOINTS" : "false",
+    "VARIABLE_NAME" : "server"
+  },
+  "allowDownloads" : false,
+  "shared" : false
+}

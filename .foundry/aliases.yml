@@ -1,0 +1,43 @@
+ccda_ccd_b1_ambulatory_v2:
+  rid: "ri.foundry.main.dataset.240efe95-edd1-4e3f-82cf-c913ee5ec077"
+ccda_documents:
+  rid: "ri.foundry.main.dataset.877bc6a8-2ec1-4b21-9794-4ad02cc27e30"
+ccda_encounter_code_value_set:
+  rid: "ri.foundry.main.dataset.6a83f3d6-4cd6-413b-9db3-9a792118e69f"
+ccda_response_cs_files:
+  rid: "ri.foundry.main.dataset.5f829e1d-0412-449e-bf0a-56a0a7920b06"
+ccda_response_files:
+  rid: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
+ccda_value_set_mapping_table_dataset:
+  rid: "ri.foundry.main.dataset.5ba1594c-ef36-4eeb-b6c4-d3d005dbd127"
+count_vocab_by_section:
+  rid: "ri.foundry.main.dataset.70caf6d9-1abd-4142-aab2-f020f8cefcd0"
+dq_ccda_snooper_people:
+  rid: "ri.foundry.main.dataset.8cb5366c-e7e2-46ef-af2f-a485269a1a01"
+  branch: "master"
+dq_ccda_snooper_section:
+  rid: "ri.foundry.main.dataset.8d82891b-9f5c-4967-a27c-6791bc982a69"
+ehx_ccda_response_example_copy:
+  rid: "ri.foundry.main.dataset.e2434242-adb8-42ed-b558-7b02011b0d14"
+gs_measurement:
+  rid: "ri.foundry.main.dataset.b3d79624-ae0f-4253-8a22-993e63a26e5c"
+gs_observation:
+  rid: "ri.foundry.main.dataset.c3af0c2a-d104-48c8-811a-95b03a9b120a"
+gs_person:
+  rid: "ri.foundry.main.dataset.b496020b-ac95-4dc0-b843-523d64b124e1"
+gs_visit_occurrence:
+  rid: "ri.foundry.main.dataset.70b73b5c-5f14-4472-80f2-605a73a278e9"
+omop_concept:
+  rid: "ri.foundry.main.dataset.831ad30e-a134-41ac-8f68-def86cc8b05c"
+omop_concept_relationship:
+  rid: "ri.foundry.main.dataset.32979be7-c8ce-4dc9-95f0-abd066246215"
+test_output_ds:
+  rid: "ri.foundry.main.dataset.01663c58-5c5a-4fcd-953a-7f036b73586c"
+vocab_discovered_codes:
+  rid: "ri.foundry.main.dataset.e5fc74fe-6b25-4de0-b722-088575f62ed9"
+vocab_discovered_codes_expanded:
+  rid: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
+vocab_discovered_codes_with_counts:
+  rid: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
+vsac_encountertypecode:
+  rid: "ri.foundry.main.dataset.f32d1421-220b-4881-b260-d1c9b66a823d"

@@ -1,0 +1,30 @@
+inputs:
+- alias: "ccda_response_files"
+  properties:
+    type: "dataset"
+    dataset:
+      rid: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
+      assumedMarkings: []
+outputs:
+- alias: "dq_ccda_snooper_section"
+  properties:
+    type: "dataset"
+    dataset:
+      rid: "ri.foundry.main.dataset.8d82891b-9f5c-4967-a27c-6791bc982a69"
+runtime:
+  type: "managedContainer"
+  managedContainer:
+    identifier: "code-workspaces-jupyter-python-3_9-image"
+    command: "/opt/palantir/transforms.d/run-ipynb.sh"
+    filePath: "dq_ccda_snooper_section.ipynb"
+    envVars:
+      ENABLE_CODE_BUDDY: "false"
+      ENABLE_MANAGED_CONDA_ENVIRONMENTS: "true"
+      ENABLE_MANAGED_CRAN_ENVIRONMENTS: "false"
+      ENABLE_MANAGED_R_CONDA_ENVIRONMENTS: "false"
+      ENABLE_WRITE_BRANCH_PREFIX: "false"
+      UPLOAD_CODE_CHECKPOINTS: "true"
+resources:
+  cpu: "4"
+  memory: "8G"
+shouldArchiveLogsToOutputs: false
