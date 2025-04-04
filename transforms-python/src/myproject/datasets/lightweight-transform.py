@@ -14,6 +14,7 @@ from transforms.api import transform, lightweight, Input, LightweightInput, Outp
 def compute(
     #ccda_cedars_response_files: LightweightInput,
     #ccda_medex_response_files: LightweightInput,
+    lightweight_test,
     discovered_codes_expanded: LightweightOutput,
     discovered_codes: LightweightOutput,
     discovered_codes_with_counts: LightweightOutput
