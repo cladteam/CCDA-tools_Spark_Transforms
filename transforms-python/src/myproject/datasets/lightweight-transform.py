@@ -12,7 +12,7 @@ from transforms.api import transform, lightweight, Input, LightweightInput, Outp
     discovered_codes_with_counts=Output("/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes_with_counts")
 )
 def compute(
-    #ccda_cedars_response_files: LightweightInput,
+    ccda_cedars_response_files: LightweightInput,
     #ccda_medex_response_files: LightweightInput,
     lightweight_test,
     discovered_codes_expanded: LightweightOutput,
