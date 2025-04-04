@@ -21,4 +21,4 @@ def compute(
     df_custom = pl.DataFrame({"phrase": ["Hello", "World"]})
     #df_input = ccda_cedars_response_files.polars().limit(10)
     # Remove comment to write contents of df_custom to discovered_codes_expanded on build
-    lightweight.write_table(df_custom)
+    lightweight_test.write_table(df_custom)
