@@ -4,7 +4,7 @@ from transforms.api import transform, lightweight, Input, LightweightInput, Outp
 
 @lightweight
 @transform(
-#    ccda_cedars_response_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"),
+    ccda_cedars_response_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"),
 #    ccda_medex_response_files=Input("ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"),
     lightweight_test=Output("/All of Us-cdb223/HIN - HIE/CCDA/lightweight_test"),
     discovered_codes_expanded=Output("/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes_expanded"),
