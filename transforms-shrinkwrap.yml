@@ -15,13 +15,8 @@ mappings:
   - "BUILD"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.102c1d13-1d60-4523-bd2a-d148226f7692"
-- alias: "ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/lightweight_test"
   modes:
-  - "READ"
+  - "BUILD"
   path: "/deprecated-field"
-  rid: "ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"
-- alias: "ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"
-  modes:
-  - "READ"
-  path: "/deprecated-field"
-  rid: "ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"
+  rid: "ri.foundry.main.dataset.bd23d731-4cf6-413d-a14c-42441020e739"
