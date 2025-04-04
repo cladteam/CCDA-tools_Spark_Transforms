@@ -1,0 +1,27 @@
+---
+mappings:
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.fb6fd263-daf3-4834-9880-c5fe9e6c352b"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes_expanded"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.c82813e7-06fd-4f6d-ad50-3263d5a9e069"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes_with_counts"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.102c1d13-1d60-4523-bd2a-d148226f7692"
+- alias: "ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"
+- alias: "ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"
