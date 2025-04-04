@@ -1,8 +1,0 @@
-section,oid,concept_code,concept_name
-Encounters,2.16.840.1.113883.6.1,46240-8,"History of encounters"
-Encounters,2.16.840.1.113883.6.12,99222,"InPatient Admission"
-Encounters,2.16.840.1.113883.6.96,59058001,"General Physician"
-Encounters,2.16.840.1.113883.6.259,1160-1,"Urgent Care Center"
-Encounters,2.16.840.1.113883.6.96,404684003,"Finding"
-Encounters,2.16.840.1.113883.6.1,29308-4,"ENCOUNTER DIAGNOSIS"
-Encounters,2.16.840.1.113883.6.96,409586006,"Complaint"

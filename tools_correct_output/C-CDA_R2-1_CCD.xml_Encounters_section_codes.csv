@@ -1,6 +1,0 @@
-section,oid,concept_code,concept_name
-Encounters,2.16.840.1.113883.6.1,46240-8,"History of encounters"
-Encounters,2.16.840.1.113883.6.12,99213,"Office outpatient visit 15 minutes"
-Encounters,2.16.840.1.113883.6.96,59058001,"General Physician"
-Encounters,2.16.840.1.113883.6.259,1160-1,"Urgent Care Center"
-Encounters,2.16.840.1.113883.6.96,404684003,"Finding"

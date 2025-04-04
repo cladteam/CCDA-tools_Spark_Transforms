@@ -1,8 +1,0 @@
-section,oid,concept_code,concept_name
-Encounters,2.16.840.1.113883.6.1,46240-8,"History of encounters"
-Encounters,2.16.840.1.113883.6.12,99213,"Office/outpatient visit, est"
-Encounters,2.16.840.1.113883.6.96,404684003,"Finding"
-Encounters,2.16.840.1.113883.6.12,99213,"Office/outpatient visit, est"
-Encounters,2.16.840.1.113883.6.12,99412,"Preventive counseling, group"
-Encounters,2.16.840.1.113883.6.12,99412,"Preventive counseling, group"
-Encounters,2.16.840.1.113883.6.12,99213,"Office/outpatient visit, est"

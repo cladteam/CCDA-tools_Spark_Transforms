@@ -1,8 +1,0 @@
-section,oid,concept_code,concept_name
-Vital_Signs,2.16.840.1.113883.6.1,8716-3,"Vital Signs"
-Vital_Signs,2.16.840.1.113883.6.96,46680005,"Vital signs"
-Vital_Signs,2.16.840.1.113883.6.1,8302-2,"Height"
-Vital_Signs,2.16.840.1.113883.6.1,3141-9,"Weight"
-Vital_Signs,2.16.840.1.113883.6.1,39156-5,"Body Mass Index Calculated"
-Vital_Signs,2.16.840.1.113883.6.1,8480-6,"BP Systolic"
-Vital_Signs,2.16.840.1.113883.6.1,8462-4,"BP Diastolic"

@@ -1,8 +1,0 @@
-section,oid,concept_code,concept_name
-recordTarget/patientRole/patient,2.16.840.1.113883.5.1,M,
-recordTarget/patientRole/patient,MX-CODESET-RACE,2106-3,
-recordTarget/patientRole/patient,CHPI-RACE,UNKOW,
-recordTarget/patientRole/patient,CDCREC,2106-3,
-recordTarget/patientRole/patient,MX-CODESET-RACE,2054-5,
-recordTarget/patientRole/patient,MX-CODESET-ETHNICGROUP,U,
-documentationOf/serviceEvent,2.16.840.1.113883.5.88,PCP,

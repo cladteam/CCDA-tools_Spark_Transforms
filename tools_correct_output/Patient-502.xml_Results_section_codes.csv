@@ -1,7 +1,0 @@
-section,oid,concept_code,concept_name
-Results,2.16.840.1.113883.6.1,30954-2,"Results"
-Results,2.16.840.1.113883.6.96,16254007,"Lipid Panel"
-Results,2.16.840.1.113883.6.1,14646-4,"HDLc SerPl-sCnc"
-Results,2.16.840.1.113883.6.1,2089-1,"LDLc SerPl-mCnc"
-Results,2.16.840.1.113883.6.1,2093-3,"Cholest SerPl-mCnc"
-Results,2.16.840.1.113883.6.1,12951-0,"Trigl SerPl Calc-mCnc"

@@ -1,8 +1,0 @@
-section,oid,concept_code,concept_name
-Encounters,2.16.840.1.113883.6.1,46240-8,"Encounters"
-Encounters,2.16.840.1.113883.6.12,99213,"Office outpatient visit 15 minutes"
-Encounters,2.16.840.1.113883.6.101,207R00000X,"Internal Medicine"
-Encounters,2.16.840.1.113883.6.259,1160-1,"Urgent Care Center"
-Encounters,2.16.840.1.113883.6.1,29308-4,"Diagnosis"
-Encounters,2.16.840.1.113883.6.96,282291009,"Diagnosis"
-Encounters,2.16.840.1.113883.6.1,33999-4,"Status"
