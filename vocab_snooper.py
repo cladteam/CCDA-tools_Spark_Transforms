@@ -64,6 +64,9 @@ concepts_introduced_in_mapping = [
     }
 ]
 
+
+
+
 def snoop_for_code_tag(tree, expr):
     """
     Finds all elements matching the XPath expression (expr) in the 
@@ -303,7 +306,7 @@ def code_entry_point_files(dataset_name):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_vocab_snooper.log",
+        filename="log_vocab_snooper.log",
         force=True, level=logging.WARNING)
 
     vocab_discovered_codes_expanded = process_dataset_of_files(dataset_name)
@@ -322,7 +325,7 @@ def code_entry_point_strings(dataset_name):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_vocab_snooper.log",
+        filename="log_vocab_snooper.log",
         force=True, level=logging.WARNING)
 
     vocab_discovered_codes_expanded = process_dataset_of_strings(dataset_name)
@@ -351,7 +354,7 @@ def main():
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_vocab_snooper.log",
+        filename="log_vocab_snooper.log",
         force=True, level=logging.WARNING)
 
     all_vocab_codes = pd.DataFrame()
