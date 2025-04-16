@@ -72,7 +72,7 @@ def snoop_xml_string(data_source, xml_string):
 
 @configure(profile=['DRIVER_MEMORY_LARGE', 'NUM_EXECUTORS_64' ])
 @transform(
-discovered_codes = Output("ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"),
+    discovered_codes = Output("ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"),
     xml_files=Input("ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4")
 #        xml_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f")
 )
