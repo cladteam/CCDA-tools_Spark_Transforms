@@ -74,4 +74,4 @@ def compute(snooper_people, xml_files):
     files_df = xml_files.filesystem().files('**/*.xml')
     rdd = files_df.rdd.flatMap(process_file)
     processed_df = rdd.toDF(people_snooper_schema)
-    snooper_people.write_dataframe(processed_df) 
+    snooper_people.write_dataframe(processed_df)
