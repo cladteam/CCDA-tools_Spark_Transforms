@@ -13,7 +13,6 @@ import logging
 import re
 import lxml.etree as ET
 from xml_ns import ns
-import os
 import vocab_maps
 from collections import defaultdict
 from foundry.transforms import Dataset
@@ -42,9 +41,9 @@ def process_xml_file(file_path):
         except Exception as e:
             logger.error(f"Exception: Failed to parse (other) {file_path} {e}")
             return data_records
-        except Error as e:
-            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
-            return data_records
+#        except Error as e:
+#            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
+#            return data_records
 
         elements = [
             ('administrativeGenderCode', 'Gender'),
@@ -123,7 +122,7 @@ def entry_point_2(dataset, export_flag, write_flag, limit=0):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_people.log",
+        filename="log_dq_snooper_people.log",
         force=True, level=logging.WARNING)
 
     df = process_dataset_of_files(dataset, limit)
@@ -132,7 +131,7 @@ def entry_point_2(dataset, export_flag, write_flag, limit=0):
         # Save dataset to HDFS/Spark in Foundry
         dq_ccda_snooper_people = Dataset.get("dq_ccda_snooper_people")
         dq_ccda_snooper_people.write_table(df)
-        print(f"wrote dq_ccda_snooper_people dataset")
+        print("wrote dq_ccda_snooper_people dataset")
         
     if write_flag:
         df.to_csv("dq_ccda_snooper_people.csv")
@@ -151,7 +150,7 @@ def entry_point(dataset_name, export_flag, write_flag):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_people.log",
+        filename="log_dq_snooper_people.log",
         force=True, level=logging.WARNING)
 
     df = process_dataset_of_files_by_name("ccda_response_files")
@@ -160,7 +159,7 @@ def entry_point(dataset_name, export_flag, write_flag):
         # Save dataset to HDFS/Spark in Foundry
         dq_ccda_snooper_people = Dataset.get("dq_ccda_snooper_people")
         dq_ccda_snooper_people.write_table(df)
-        print(f"wrote dq_ccda_snooper_people dataset")
+        print("wrote dq_ccda_snooper_people dataset")
         
     if write_flag:
         df.to_csv("dq_ccda_snooper_people.csv")
@@ -183,7 +182,7 @@ def main():
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_people.log",
+        filename="log_dq_snooper_people.log",
         force=True, level=logging.WARNING)
 
 
@@ -191,8 +190,7 @@ def main():
 
     if args.dataset_strings:
         entry_point(args.dataset_strings, args.export, args.write_csv)
-        
-        df = process_dataset_of_strings(args.dataset_strings)
+        #df = process_dataset_of_strings(args.dataset_strings)
     else:
         print("need to specify an input dataset?")
 
