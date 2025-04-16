@@ -15,6 +15,7 @@ people_snooper_schema =  T.StructType([
     T.StructField("Birthtime", T.StringType(), True),
 ])
 
+
 def parse_string(file_path, xml_string):
     """ Parses a document for these attributes.
         ** Assumes ** they only appear once, retrieves the only first
@@ -30,8 +31,7 @@ def parse_string(file_path, xml_string):
         ('birthTime', 'BirthTime')
     ]
 
-    data_records = []
-
+    # just one record, loop over the fields
     record = {'Filename': os.path.basename(file_path)}
     for tag, label in elements:
         element = tree.find(f'.//hl7:{tag}', namespaces=ns)
@@ -43,9 +43,8 @@ def parse_string(file_path, xml_string):
         else:
             record[label] = 'Unknown'
 
-        data_records.append(record)
+    return record
 
-    return data_records
 
 @configure(profile=['DRIVER_MEMORY_LARGE', 'NUM_EXECUTORS_64' ])
 @transform(
@@ -69,11 +68,7 @@ def compute(snooper_people, xml_files):
             for match in doc_regex.finditer(contents):
                 match_tuple = match.groups(0)
                 xml_content = match_tuple[0]
-
-                record_list = parse_string(file_status.path, xml_content)
-
-                for record_dict in record_list:
-                    yield(Row(**record_dict))
+                yield(parse_string(file_status.path, xml_content))
 
     files_df = xml_files.filesystem().files('**/*.xml')
     rdd = files_df.rdd.flatMap(process_file)
