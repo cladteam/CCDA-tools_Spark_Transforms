@@ -53,7 +53,7 @@ def parse_string(file_path, xml_string):
     # xml_files=Input("ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4")
     xml_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f")
 )
-def compute(ctx, discovered_codes, xml_files):
+def compute(xml_files):
 
     doc_regex = re.compile(r'(<ClinicalDocument.*?</ClinicalDocument>)', re.DOTALL)
     fs = xml_files.filesystem()
@@ -78,4 +78,4 @@ def compute(ctx, discovered_codes, xml_files):
     files_df = xml_files.filesystem().files('**/*.xml')
     rdd = files_df.rdd.flatMap(process_file)
     processed_df = rdd.toDF(people_snooper_schema)
-    discovered_codes.write_dataframe(processed_df) 
+    return(processed_df)
