@@ -1,10 +1,5 @@
 ---
 mappings:
-- alias: "/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_people"
-  modes:
-  - "BUILD"
-  path: "/deprecated-field"
-  rid: "ri.foundry.main.dataset.7062bd72-cbff-425f-ba8f-c03d892f58d9"
 - alias: "/All of Us-cdb223/HIN - HIE/CCDA/discovered_codes"
   modes:
   - "BUILD"
@@ -36,6 +31,11 @@ mappings:
   - "READ"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
+- alias: "ri.foundry.main.dataset.7062bd72-cbff-425f-ba8f-c03d892f58d9"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.7062bd72-cbff-425f-ba8f-c03d892f58d9"
 - alias: "ri.foundry.main.dataset.ca873ab5-748b-4f53-9ae4-0c819c7fa3d4"
   modes:
   - "READ"
