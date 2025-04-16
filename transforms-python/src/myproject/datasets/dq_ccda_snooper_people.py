@@ -16,6 +16,10 @@ people_snooper_schema =  T.StructType([
 ])
 
 def parse_string(file_path, xml_string):
+    """ Parses a document for these attributes.
+        ** Assumes ** they only appear once, retrieves the only first
+        because it's using find(), not findall()
+    """
     root = ET.fromstring(xml_string)
     tree = ET.ElementTree(root)
 
@@ -28,8 +32,8 @@ def parse_string(file_path, xml_string):
 
     data_records = []
 
+    record = {'Filename': os.path.basename(file_path)}
     for tag, label in elements:
-        record = { 'Filename': os.path.basename(file_path) }
         element = tree.find(f'.//hl7:{tag}', namespaces=ns)
         
         if tag == 'birthTime' and element is not None:
