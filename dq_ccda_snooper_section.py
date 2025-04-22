@@ -49,6 +49,7 @@ def process_xml_file(file_path):
     """ returns a list of dictionaries/records of attributes from 
         persons in the file
     """
+    data_records=[]
     with open(file_path, 'rb') as file:
         tree = ET.parse(file_path)
         try:
@@ -63,9 +64,9 @@ def process_xml_file(file_path):
         except Exception as e:
             logger.error(f"Exception: Failed to parse (other) {file_path} {e}")
             return data_records
-        except Error as e:
-            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
-            return data_records
+#        except Error as e:
+#            logger.error(f"Error: Failed to parse (other) {file_path} {e}")
+#            return data_records
 
     
         """
@@ -270,7 +271,7 @@ def entry_point_2(dataset, write_flag):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_section.log",
+        filename="log_dq_snooper_section.log",
         force=True, level=logging.WARNING)
 
     df = process_dataset_of_files(dataset)
@@ -290,7 +291,7 @@ def entry_point(dataset_read, dataset_write, export_flag, write_flag, limit):
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_section.log",
+        filename="log_dq_snooper_section.log",
         force=True, level=logging.WARNING)
 
     df = process_dataset_of_files_by_name(dataset_read, limit)
@@ -320,7 +321,7 @@ def main():
 
     logging.basicConfig(
         format='%(levelname)s: %(message)s',
-        filename=f"log_dq_snooper_section.log",
+        filename="log_dq_snooper_section.log",
         force=True, level=logging.WARNING)
 
     all_vocab_codes = pd.DataFrame()

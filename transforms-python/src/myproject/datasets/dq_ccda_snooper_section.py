@@ -11,6 +11,7 @@ from ..xml_ns import ns
 """
     Derived from the dq_ccda_snooper_section_simple, which in turn is
     dervied from the dq_ccda_snooper_section. 
+"""
 
 section_snooper_schema =  T.StructType([
     T.StructField("source", T.StringType(), True),
@@ -130,10 +131,10 @@ def parse_string(file_path, xml_string):
     return snoop_sections(tree, file_path)
 
 
-@configure(profile=['DRIVER_MEMORY_LARGE', 'NUM_EXECUTORS_64' ])
+@configure(profile=['DRIVER_MEMORY_LARGE', 'NUM_EXECUTORS_16' ])
 @transform(
     snooper_people = Output("/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_section"),
-    xml_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f")
+    xml_files=Input("ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49")
 )
 def compute(snooper_people, xml_files):
 
@@ -153,7 +154,8 @@ def compute(snooper_people, xml_files):
                 xml_content = match_tuple[0]
                 yield(parse_string(file_status.path, xml_content))
 
-    files_df = xml_files.filesystem().files('**/*.xml')
+### NOTE THE LIMIT!!
+    files_df = xml_files.filesystem().files('**/*.xml').limit(10)
     rdd = files_df.rdd.flatMap(process_file)
     processed_df = rdd.toDF(section_snooper_schema)
     snooper_people.write_dataframe(processed_df)
