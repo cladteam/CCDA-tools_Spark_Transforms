@@ -144,10 +144,10 @@ def parse_string(file_path, xml_string):
 
 @configure(profile=['DRIVER_MEMORY_LARGE', 'NUM_EXECUTORS_16' ])
 @transform(
-    snooper_people = Output("/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_section"),
+    snooper_section = Output("/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_section"),
     xml_files=Input("ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49")
 )
-def compute(snooper_people, xml_files):
+def compute(snooper_section, xml_files):
 
     doc_regex = re.compile(r'(<ClinicalDocument.*?</ClinicalDocument>)', re.DOTALL)
     fs = xml_files.filesystem()
@@ -169,4 +169,4 @@ def compute(snooper_people, xml_files):
     files_df = xml_files.filesystem().files('**/*.xml').limit(10)
     rdd = files_df.rdd.flatMap(process_file)
     processed_df = rdd.toDF(section_snooper_schema)
-    snooper_people.write_dataframe(processed_df)
+    snooper_section.write_dataframe(processed_df)
