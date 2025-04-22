@@ -112,7 +112,7 @@ def snoop_sections(tree, file_path):
                 
                 records.append(record)
 
-            for code_path in (value_dict.keys() - code_path.keys()):
+            for code_path in (value_dict.keys() - code_dict.keys()):
                 record = {
                     'source'      : os.path.basename(file_path),
                     'section'     : section_template_id,
