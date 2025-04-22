@@ -85,7 +85,7 @@ def snoop_sections(tree, file_path):
             value_dict = snoop_for_tag(entry_ele, "value", tree)
             for code_path in code_dict:
                 record = {
-                    'source'      : os.path.basename(file_path), 
+                    'source'      : os.path.basename(file_path),
                     'section'     : section_template_id,
                     'section_code': section_code,
                     'section_name': section_name,
@@ -94,14 +94,22 @@ def snoop_sections(tree, file_path):
                     'code'        : code_dict[code_path][0]['code'],
                     'codeSystem'  : code_dict[code_path][0]['codeSystem'],
 
-                    'value_type'  : value_dict[code_path][0]['type'],
-                    'value_unit'  : value_dict[code_path][0]['unit'],
-                    'value_value' : value_dict[code_path][0]['value'],
-                    'value_code'  : value_dict[code_path][0]['code'], 
-                    'value_codeSystem': value_dict[code_path][0]['codeSystem'],
+                    'value_type'  : None,
+                    'value_unit'  : None,
+                    'value_value' : None,
+                    'value_code'  : None,
+                    'value_codeSystem': None,
 
                     'value_text'  : code_dict[code_path][1].strip()
                 }
+                if code_path in value_dict:
+                    # is this ever true?
+                    record['value_type'] = value_dict[code_path][0]['type']
+                    record['value_unit'] = value_dict[code_path][0]['unit']
+                    record['value_value']= value_dict[code_path][0]['value']
+                    record['value_code'] = value_dict[code_path][0]['code']
+                    record['value_codeSystem'] = value_dict[code_path][0]['codeSystem']
+                
                 records.append(record)
 
             for code_path in (value_dict.keys() - code_path.keys()):
