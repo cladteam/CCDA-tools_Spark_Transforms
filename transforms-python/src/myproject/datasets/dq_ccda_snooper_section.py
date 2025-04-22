@@ -100,7 +100,7 @@ def snoop_sections(tree, file_path):
                     'value_code'  : None,
                     'value_codeSystem': None,
 
-                    'value_text'  : code_dict[code_path][1].strip()
+                    'value_text'  : ( code_dict[code_path][1].strip() if code_dict[code_path][1] else None )
                 }
                 if code_path in value_dict:
                     # is this ever true?
