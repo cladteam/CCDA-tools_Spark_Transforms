@@ -55,7 +55,10 @@ def snoop_for_tag(starting_ele, tag, tree):
             clean_value = re.sub(r'{.*}', '', value)
             value_attribs_dict[clean_attr] = clean_value
 
-        value_dict[value_path].append((value_attribs_dict, value_ele.text))
+        if value_path in value_dict:
+            value_dict[value_path].append((value_attribs_dict, value_ele.text))
+        else:
+            value_dict[value_path] = (value_attribs_dict, value_ele.text)
 
     return value_dict
 
@@ -97,13 +100,13 @@ def snoop_sections(tree, file_path):
                     'value_code'  : value_dict[code_path][0]['code'], 
                     'value_codeSystem': value_dict[code_path][0]['codeSystem'],
 
-                    'value_text'  : code_dict[code_path][1].strip() 
+                    'value_text'  : code_dict[code_path][1].strip()
                 }
                 records.append(record)
 
-            for code_path in (value_dict.keys() - code_path.keys()):       
+            for code_path in (value_dict.keys() - code_path.keys()):
                 record = {
-                    'source'      : os.path.basename(file_path), 
+                    'source'      : os.path.basename(file_path),
                     'section'     : section_template_id,
                     'section_code': section_code,
                     'section_name': section_name,
@@ -115,7 +118,7 @@ def snoop_sections(tree, file_path):
                     'value_type'  : value_dict[code_path][0]['type'],
                     'value_unit'  : value_dict[code_path][0]['unit'],
                     'value_value' : value_dict[code_path][0]['value'],
-                    'value_code'  : value_dict[code_path][0]['code'], 
+                    'value_code'  : value_dict[code_path][0]['code'],
                     'value_codeSystem': value_dict[code_path][0]['codeSystem'],
 
                     'value_text'  : None,
