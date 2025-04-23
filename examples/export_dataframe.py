@@ -13,9 +13,9 @@ from foundry.transforms import Dataset
 import pandas as pd
 
 pandas_df = pd.DataFrame({
-    'a': [1,2,3],
+    'a': [1, 2, 3],
     'b': [2.1, 3.2, 4.3],
-    'c': [date(2001,1,1), date(2001, 9, 11), date(1776, 7, 4)]
+    'c': [date(2001, 1, 1), date(2001, 9, 11), date(1776, 7, 4)]
 })
 
 test_output_ds = Dataset.get("test_output_ds")
