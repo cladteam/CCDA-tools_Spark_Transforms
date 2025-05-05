@@ -12,7 +12,7 @@ people_snooper_schema =  T.StructType([
     T.StructField("Gender", T.StringType(), True),
     T.StructField("Race", T.StringType(), True),
     T.StructField("Ethnicity", T.StringType(), True),
-    T.StructField("Birthtime", T.StringType(), True),
+    T.StructField("BirthTime", T.StringType(), True),
 ])
 
 
