@@ -20,8 +20,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Configuration variables - modify these as needed
-INPUT_DATASET_NAME = "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"  # Input dataset name in Foundry
-OUTPUT_DATASET_NAME = "dq_ccda_snooper_section_spark"  # Output dataset name
+###INPUT_DATASET_NAME = "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"  # Input dataset name in Foundry
+####OUTPUT_DATASET_NAME = "dq_ccda_snooper_section_spark"  # Output dataset name 
 EXPORT_TO_FOUNDRY = True  # Set to True to export results to Foundry
 EXPORT_TO_CSV = False  # Set to True to export results to CSV
 
