@@ -124,6 +124,7 @@ def process_xml_file(file_path, xml_string):  # noqa: C901
 
                 # Retrieve corresponding value(s) for the code (if any)
                 # Tuple contains (attributes dictionary, text content)
+                # BUT NOT COMPLETELY!!! just for this one code_path????
                 code_value_tuple_list = code_value_dict[code_path]
                 code_value_tuple_list = [t for t in code_value_tuple_list if 'nullFlavor' not in t[0]]
 
@@ -138,8 +139,10 @@ def process_xml_file(file_path, xml_string):  # noqa: C901
                         'section_code': section_code,
                         'section_name': section_name,
                         'path': code_path,
+                        # code_ele?
                         'code': code_ele.get('code', ''),
                         'codeSystem': code_ele.get('codeSystem', ''),
+                        # values
                         'value_type': code_value_tuple[0].get('type', ''),
                         'value_unit': code_value_tuple[0].get('unit', ''),
                         'value_value': code_value_tuple[0].get('value', ''),
