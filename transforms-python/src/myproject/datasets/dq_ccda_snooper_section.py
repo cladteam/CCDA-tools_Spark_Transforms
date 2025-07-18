@@ -117,7 +117,8 @@ def process_xml_file(file_path, xml_string):  # noqa: C901
 
                 code_value_dict = defaultdict(list)
 
-                # Merge code_dict and value_dict
+                # HERE's one bug. Merging the code and value attributes means you get crossover 
+                # from code elements code and codeSystem to the value side. 
                 for d in (code_dict, value_dict):
                     for key, value in d.items():
                         code_value_dict[key].extend(value)  # Preserve list values
