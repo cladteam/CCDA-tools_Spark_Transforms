@@ -1,7 +1,8 @@
-# test_util.py
+# thte_test_utils.py
 #
 # Help identify which part of the records returned from snooper_section
 # are different.
+# (goofy name because it will think test_util.py is a file of tests)
 #
 # Chris Roeder, July 2025
 
@@ -9,8 +10,10 @@
 import traceback
 import sys
 
-
 def compare_dict_lists(a, b):
+
+    if (len(a) == 0 and len(b) ==0):
+        return True
 
     if (len(a) != len(b)):
         print(f"\nThe lists are different lengths {len(a)}, and {len(b)}.")
@@ -18,22 +21,42 @@ def compare_dict_lists(a, b):
 
     for i in range(3):
         if a[i].keys() != b[i].keys():
-            print(f"\nThe keys are not the same in the {i} pair of dictionaries: {a.keys()}, and {b.keys()}.")
+            print(f"\nThe keys are not the same in the {i} pair of dictionaries: {a[i].keys()}, and {b[i].keys()}.")
             return False
 
         good = True
         for key in a[i].keys():
             if a[i][key] != b[i][key]:
-                print(f"\nThe value for the key: \"{key}\" in the {i} dictionaries is not the same: \n   {a[i][key]}, and \n   {b[i][key]}.")
+                print(f"\nThe value for the key: \"{key}\" in the {i} dictionaries is not the same: \n"
+                      f"   \"{a[i][key]}\", and \n   \"{b[i][key]}\"."
+                      f"{type(a[i][key])}  {type(b[i][key])}")
                 good = False
         return good
 
 
+
+def compare_lists(a, b):
+
+    if (len(a) == 0 and len(b) ==0):
+        return True
+
+    if (len(a) != len(b)):
+        print(f"\nThe lists are different lengths {len(a)}, and {len(b)}.")
+        return False
+
+    for i in range(3):
+        good = True
+        if a[i] != b[i]:
+            print(f"\nThe value {i} is not the same: \n   {a[i]}, and \n   {b[i]}.")
+            good = False
+        return good
+
+        
 def print_dict_list(records):
     for rec in records:
         print(type(rec))
         for key, val in rec.items():
-            print(f"{key}: {val}")
+            print(f"{key}: \"{val}\" {type(val)} ")
         print("")
 
 
@@ -65,6 +88,8 @@ def do_test_section_snooper(records, expected_rows, verbose=False):
                 print_dict_list(expected_rows)
         else:
             print("TEST PASSSED")
+            if verbose:
+                print_dict_list(records)
     except Exception as x:
         print(f"EXCEPTION when comparing {x}")
         if verbose:
@@ -73,7 +98,4 @@ def do_test_section_snooper(records, expected_rows, verbose=False):
 
     print(f"equal? {records == expected_rows}")
     print(f"good? {good}")
-    # BOGUS PASS SO I CAN COMMIT THIS TEST before fixing
-    assert True
-#    assert records == expected_rows
-#    assert good
+    return (records == expected_rows and good)

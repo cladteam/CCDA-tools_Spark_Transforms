@@ -1,4 +1,4 @@
-from transforms.api import transform, Input, Output, incremental, configure
+from transforms.api import transform, Input, Output,  configure
 import os
 import io
 import logging
@@ -6,12 +6,11 @@ import re
 import lxml.etree as ET
 from ..xml_ns import ns
 from collections import defaultdict
-from pyspark.sql import functions as F
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, StringType
-from typing import List, Dict
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from typing import List
+from ..util import clean_path, keep_path
 
-# Configure logging
 logging.basicConfig(
     format='%(levelname)s: %(message)s',
     filename="log_dq_snooper_section_spark.log",
@@ -19,13 +18,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Configuration variables - modify these as needed
-###INPUT_DATASET_NAME = "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"  # Input dataset name in Foundry
-####OUTPUT_DATASET_NAME = "dq_ccda_snooper_section_spark"  # Output dataset name 
-EXPORT_TO_FOUNDRY = True  # Set to True to export results to Foundry
-EXPORT_TO_CSV = False  # Set to True to export results to CSV
 
-# Output schema for Spark DataFrame
 section_snooper_schema = StructType([
     StructField("source", StringType(), True),
     StructField("section", StringType(), True),
@@ -39,119 +32,147 @@ section_snooper_schema = StructType([
     StructField("value_code", StringType(), True),
     StructField("value_codeSystem", StringType(), True),
     StructField("value_text", StringType(), True),
-    StructField("path", StringType(), True)
+    StructField("path", StringType(), True),  # indexed
+    StructField("clean_path", StringType(), True)
 ])
 
-# Code exclusion list
-code_exclusion_list = [
-    '33999-4', '10157-6', '64572001', '33999-4', '48767-8', '282291009', '55607006'
+
+code_exclusion_list = [ 
+    '33999-4', '10157-6',  '48767-8'
+    # see #418 for why we should keep these '64572001',  '282291009', '55607006'
+]
+
+path_exclusion_list = [ # not parent paths
+    r'.*/section/entry/organizer/code$',
+    
+    # excluded for the purpose of concept-code snooping, may still want this later
+    # In fact, this is redundant because the values in an observationRange don't
+    # have corresponding codes that drive the code here. So they would be ignored.
+    # FWIW, these values are often very long strings of spaces.
+    r'.*/referenceRange/observationRange/code$' 
 ]
 
 
-def process_xml_file(file_path, xml_string):  # noqa: C901
+
+def collect_value_elements(entry_ele, tree):
+    # Dict of (attribute-dict, text-value) pairs, keyed by path
+    value_dict = defaultdict(list)
+    for value_ele in entry_ele.findall(".//value", ns):
+        # Clean the XML path (remove namespace references)
+        path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
+        parent_path = "/".join(path.split("/")[:-1])  # Get parent path
+        value_attribs_dict =  { 'type': '', 'unit': '', 'value': '',
+                                'code': '', 'codeSystem': ''}
+        for attr in value_ele.attrib:
+            clean_attr = re.sub(r'{.*?}', '', attr)
+            clean_value = re.sub(r'{.*?}', '', value_ele.attrib.get(attr, ''))
+            value_attribs_dict[clean_attr] = clean_value
+        value_attribs_dict['path'] = parent_path
+        value_dict[parent_path].append((value_attribs_dict, value_ele.text))
+    return value_dict
+
+
+def collect_code_elements(entry_ele, tree):
+    # Dict of (attribute-dict, text-value) pairs, keyed by path
+    code_dict = defaultdict(list)
+    for code_ele in entry_ele.findall(".//code", ns):
+        code = code_ele.get('code','')
+        codeSystem = code_ele.get('codeSystem','')
+        if codeSystem != '' and code != '' \
+           and code not in code_exclusion_list \
+           and 'nullFlavor' not in code_ele.attrib:
+            # Clean the XML path (remove namespace references)
+            path = re.sub(r'{.*?}', '', tree.getelementpath(code_ele))
+            if keep_path(path, path_exclusion_list):
+                parent_path = "/".join(path.split("/")[:-1])  # Get parent path
+                code_attribs_dict = {}
+                for attr in code_ele.attrib:
+                    clean_attr = re.sub(r'{.*?}', '', attr)
+                    clean_code = re.sub(r'{.*?}', '', code_ele.attrib.get(attr, ''))
+                    code_attribs_dict[clean_attr] = clean_code
+                code_attribs_dict['path'] = parent_path
+                code_dict[parent_path].append((code_attribs_dict, code_ele.text))
+    return code_dict
+
+
+def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
     """Process a single XML file and extract records from it"""
     records = []
-
     root = ET.fromstring(xml_string)
     tree = ET.ElementTree(root)
 
-    # Find all 'section' elements in the XML tree using the specified namespace
     section_elements = tree.findall(".//section", ns)
-
     for section_element in section_elements:
-        # Default section template ID if not found
-        section_template_id = "n/a"
-
-        # Extract templateId from the section (if available)
+        section_template_id = ""
         section_template_ele = section_element.findall("templateId", ns)
         if len(section_template_ele) > 0:
             section_template_id = section_template_ele[0].get('root')
-
-        # Extract section code and display name
         section_code_elems = section_element.findall("code", ns)
-        if not section_code_elems:
-            continue
+        if section_code_elems and section_template_id != '':
+            section_code = section_code_elems[0].get('code')
+            section_name = section_code_elems[0].get('displayName')
 
-        section_code = section_code_elems[0].get('code')
-        section_name = section_code_elems[0].get('displayName')
-
-        # Find all 'entry' elements within the section
-        entry_elements = section_element.findall("entry", ns)
-
-        for entry_ele in entry_elements:
-            # Dictionary to store extracted values, grouped by XML path
-            value_dict = defaultdict(list)
-            code_dict = defaultdict(list)
-
-            # Extract all 'value' elements within the entry
-            value_elements = entry_ele.findall(".//value", ns)
-            for value_ele in value_elements:
-                # Clean the XML path (remove namespace references)
-                value_path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
-                value_path = "/".join(value_path.split("/")[:-1])  # Get parent path
-
-                value_attribs_dict = {}
-                for (attr, value) in value_ele.attrib.items():
-                    clean_attr = re.sub(r'{.*}', '', attr)
-                    clean_value = re.sub(r'{.*}', '', value)
-                    value_attribs_dict[clean_attr] = clean_value
-
-                # Dict of (attribute-dict, text-value) pairs, keyed by path
-                value_dict[value_path].append((value_attribs_dict, value_ele.text))
-
-            # Extract all 'code' elements within the entry
-            code_elements = entry_ele.findall(".//code", ns)
-            for code_ele in code_elements:
-                # Clean the XML path (remove namespace references)
-                code_path = re.sub(r'{.*?}', '', tree.getelementpath(code_ele))
-                code_path = "/".join(code_path.split("/")[:-1])  # Get parent path
-
-                code_attribs_dict = {}
-                for (attr, code) in code_ele.attrib.items():
-                    clean_attr = re.sub(r'{.*}', '', attr)
-                    clean_code = re.sub(r'{.*}', '', code)
-                    code_attribs_dict[clean_attr] = clean_code
-
-                # Dict of (attribute-dict, text-value) pairs, keyed by path
-                code_dict[code_path].append((code_attribs_dict, code_ele.text))
-
-                code_value_dict = defaultdict(list)
-
-                # HERE's one bug. Merging the code and value attributes means you get crossover 
-                # from code elements code and codeSystem to the value side. 
-                for d in (code_dict, value_dict):
-                    for key, value in d.items():
-                        code_value_dict[key].extend(value)  # Preserve list values
-
-                # Retrieve corresponding value(s) for the code (if any)
-                # Tuple contains (attributes dictionary, text content)
-                # BUT NOT COMPLETELY!!! just for this one code_path????
-                code_value_tuple_list = code_value_dict[code_path]
-                code_value_tuple_list = [t for t in code_value_tuple_list if 'nullFlavor' not in t[0]]
-
-                if code_ele.get('code', '') in code_exclusion_list:
-                    continue
-
-                for code_value_tuple in code_value_tuple_list:
-                    # Construct a new row for the DataFrame
-                    record = {
-                        'source': os.path.basename(file_path),
-                        'section': section_template_id,
-                        'section_code': section_code,
-                        'section_name': section_name,
-                        'path': code_path,
-                        # code_ele?
-                        'code': code_ele.get('code', ''),
-                        'codeSystem': code_ele.get('codeSystem', ''),
-                        # values
-                        'value_type': code_value_tuple[0].get('type', ''),
-                        'value_unit': code_value_tuple[0].get('unit', ''),
-                        'value_value': code_value_tuple[0].get('value', ''),
-                        'value_code': code_value_tuple[0].get('code', ''),
-                        'value_codeSystem': code_value_tuple[0].get('codeSystem', ''),
-                        'value_text': code_value_tuple[1].strip() if code_value_tuple[1] else ''
-                    }
-                    records.append(record)
+            for entry_ele in section_element.findall("entry", ns):
+                value_dict = collect_value_elements(entry_ele, tree)
+                code_dict = collect_code_elements(entry_ele, tree)
+                for code_path_key in code_dict:
+                    for code_tuple in code_dict[code_path_key]:
+                        code_row =  code_tuple[0]
+                        if len(value_dict[code_path_key]) > 0:
+                            for value_tuple in value_dict[code_path_key]: # hope/expect this to be just one
+                                value_row =  value_tuple[0]
+                                value_text = f"{value_tuple[1].strip() if value_tuple[1] else ''}"  # will convert None to ""
+                                record = {
+                                    'source': os.path.basename(file_path),
+                                    'section': section_template_id,
+                                    'section_code': section_code,
+                                    'section_name': section_name,
+                                    'path': code_path_key,
+                                    'clean_path': clean_path(code_path_key),
+                                    # codes
+                                    'code': code_row['code'],
+                                    'codeSystem': code_row['codeSystem'],
+                                    # values
+                                    'value_type': value_row['type'],
+                                    'value_unit': value_row['unit'],
+                                    'value_value': value_row['value'],
+                                    'value_code': value_row['code'],
+                                    'value_codeSystem': value_row['codeSystem'],
+                                    'value_text': value_text if value_tuple[1] else None
+                                }
+                                if keep_path(clean_path(code_path_key), path_exclusion_list):
+                                    if verbose:
+                                        print(f"ACCEPTED key:{code_path_key}  type:{type(value_tuple[1])} text:\"{value_tuple[1].strip() if value_tuple[1] else ''}\"  attrs:{value_tuple[0]}   ")
+                                        print(f"  {type(record['value_text'])} \"{record['value_text']}\"")
+                                    records.append(record)
+                                else:
+                                    if verbose:
+                                        print(f"REJECTED {code_path_key}")
+                        else:
+                            record = {
+                                'source': os.path.basename(file_path),
+                                'section': section_template_id,
+                                'section_code': section_code,
+                                'section_name': section_name,
+                                'path': code_path_key,
+                                # codes
+                                'code': code_row['code'],
+                                'codeSystem': code_row['codeSystem'],
+                                # values
+                                'value_type': '',
+                                'value_unit': '',
+                                'value_value': '',
+                                'value_code': '',
+                                'value_codeSystem': '',
+                                'value_text': ''
+                            }
+                            if keep_path(clean_path(code_path_key)):
+                                if verbose:
+                                    print(f"ACCEPTED {code_path_key} (no value_* values) ")
+                                records.append(record)
+                            else:
+                                if verbose:
+                                    print(f"REJECTED {code_path_key}")
 
     return records
 

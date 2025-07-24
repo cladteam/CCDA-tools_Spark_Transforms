@@ -1,6 +1,10 @@
+from myproject.test.the_test_utils import do_test_section_snooper
+from myproject.test.the_test_utils import print_exc_info
+from myproject.datasets.dq_ccda_snooper_section import process_xml_file
+import sys
 
 
-
+# rd_response_529030608625435153_2.25.296032531060316834054964486720371020921.xm
 result_ccda_data= [
    { 
       'source': "test_file",
@@ -8,7 +12,8 @@ result_ccda_data= [
       'section_code': "30954-2",
       'section_name': "RESULTS",
 
-      'path': "component/structuredBody/component/section/entry/organizer/component[0]/observation/code",
+      'path': "component/structuredBody/component/section/entry/organizer/component[1]/observation",
+      'clean_path': "component/structuredBody/component/section/entry/organizer/component/observation",
       'code': "30313-1",
       'codeSystem': "2.16.840.1.113883.6.1",
 
@@ -17,7 +22,7 @@ result_ccda_data= [
       'value_value': "10.2",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': "1: None"
+      'value_text': None
    },
    {
       'source': "test_file",
@@ -25,7 +30,8 @@ result_ccda_data= [
       'section_code': "30954-2",
       'section_name': "RESULTS",
 
-      'path': "component/structuredBody/component/section/entry/organizer/component[1]/observation/code",
+      'path': "component/structuredBody/component/section/entry/organizer/component[2]/observation",
+      'clean_path': "component/structuredBody/component/section/entry/organizer/component/observation",
       'code': "33765-9",
       'codeSystem': "2.16.840.1.113883.6.1",
 
@@ -34,7 +40,7 @@ result_ccda_data= [
       'value_value': "12.3",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': "2: None"
+      'value_text': None
    },
    {
       'source': "test_file",
@@ -42,7 +48,8 @@ result_ccda_data= [
       'section_code': "30954-2",
       'section_name': "RESULTS",
 
-      'path': "component/structuredBody/component/section/entry/organizer/component[2]/observation/code",
+      'path': "component/structuredBody/component/section/entry/organizer/component[3]/observation",
+      'clean_path': "component/structuredBody/component/section/entry/organizer/component/observation",
       'code': "26515-7",
       'codeSystem': "2.16.840.1.113883.6.1",
 
@@ -51,7 +58,7 @@ result_ccda_data= [
       'value_value': "123",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': "3: None"
+      'value_text': None 
    }
 ]
 
@@ -184,3 +191,14 @@ test_ccda_string = """
    </component>
 </ClinicalDocument>
 """
+
+def test_panel():
+    try:
+        records = process_xml_file("test_file", test_ccda_string)
+    except Exception as x:
+        print(f"EXCEPTION when running {x}")
+        print_exc_info(sys.exc_info())
+        assert False
+
+    #assert do_test_section_snooper(records, result_ccda_data, True)
+    assert do_test_section_snooper(records, result_ccda_data, False)
