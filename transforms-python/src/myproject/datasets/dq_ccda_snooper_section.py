@@ -166,7 +166,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                                 'value_codeSystem': '',
                                 'value_text': ''
                             }
-                            if keep_path(clean_path(code_path_key)):
+                            if keep_path(clean_path(code_path_key), path_exclusion_list):
                                 if verbose:
                                     print(f"ACCEPTED {code_path_key} (no value_* values) ")
                                 records.append(record)
