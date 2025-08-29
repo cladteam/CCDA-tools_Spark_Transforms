@@ -3,7 +3,7 @@ from transforms.api import transform_df, Input, Output
 
 
 @transform_df(
-    Output("/All of Us-cdb223/HIN - HIE/CCDA/datasets/vocab_discovered_codes_union"),
+    Output("/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes_union"),
     codes=Input("/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes"),
     codes_test=Input("/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes_test_files")
 )
