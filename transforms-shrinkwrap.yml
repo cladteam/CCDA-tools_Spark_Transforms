@@ -5,6 +5,28 @@ mappings:
   - "BUILD"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.32ed46f9-7055-43b5-bd1a-e094f4192b9a"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/datasets/vocab_discovered_codes_union"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.1e9e43e3-64d6-42e6-8152-036105f636f1"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.e5fc74fe-6b25-4de0-b722-088575f62ed9"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes_expanded_test_files"
+  modes:
+  - "BUILD"
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.9695fb9f-458d-46fe-bcd2-cef973f5c9e7"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes_test_files"
+  modes:
+  - "BUILD"
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.213de25e-a027-4fc4-80e5-da5b7a60649e"
 - alias: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
   modes:
   - "BUILD"
@@ -16,6 +38,11 @@ mappings:
   - "BUILD"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.7062bd72-cbff-425f-ba8f-c03d892f58d9"
+- alias: "ri.foundry.main.dataset.877bc6a8-2ec1-4b21-9794-4ad02cc27e30"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.877bc6a8-2ec1-4b21-9794-4ad02cc27e30"
 - alias: "ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"
   modes:
   - "READ"
