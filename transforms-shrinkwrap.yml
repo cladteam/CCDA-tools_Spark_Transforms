@@ -27,12 +27,27 @@ mappings:
   - "BUILD"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.46771255-6c30-40e3-a93e-f8e3ff7e545f"
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/transform/vocab_discovered_codes_with_counts_and_resource"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.f2734979-d699-4ee3-8121-16acfed72d38"
+- alias: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
 - alias: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
   modes:
   - "BUILD"
   - "READ"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.160c32e8-774e-4e71-b137-766cfc2bdccc"
+- alias: "ri.foundry.main.dataset.28fe6af8-0b22-4b45-86e2-b394c62dcd09"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.28fe6af8-0b22-4b45-86e2-b394c62dcd09"
 - alias: "ri.foundry.main.dataset.7062bd72-cbff-425f-ba8f-c03d892f58d9"
   modes:
   - "BUILD"
