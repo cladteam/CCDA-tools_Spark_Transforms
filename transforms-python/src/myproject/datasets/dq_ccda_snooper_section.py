@@ -9,6 +9,7 @@ from collections import defaultdict
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from typing import List
+from pyspark.sql import functions as F
 from ..util import clean_path, keep_path
 
 logging.basicConfig(
@@ -33,7 +34,8 @@ section_snooper_schema = StructType([
     StructField("value_codeSystem", StringType(), True),
     StructField("value_text", StringType(), True),
     StructField("path", StringType(), True),  # indexed
-    StructField("clean_path", StringType(), True)
+    StructField("clean_path", StringType(), True),
+    StructField("partner_id", StringType(), True)
 ])
 
 
@@ -190,9 +192,10 @@ snooper_section=Output("/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spa
     xml_files=Input("ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"), # 40.9 m rows, 55949 distinct files *OK*
     # xml_files=Input("ri.foundry.main.dataset.119054ed-4719-4d84-99ba-43625bcafd0f"), # 13.77 m rows, 7153 distinct filenames
     # xml_files=Input("ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"),
+    metadata=Input("/All of Us-cdb223/HIN - HIE/sharedResources/FullyIdentiifed/ccda/ccda_response_metadata"),
+    hcs_to_dp=Input("/All of Us-cdb223/HIN - HIE/sharedResources/health_care_site_to_data_partner_id"),
 )
-def compute(snooper_section, xml_files):  # noqa: C901
-
+def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
     doc_regex = re.compile(r'(<ClinicalDocument.*?</ClinicalDocument>)', re.DOTALL)
     fs = xml_files.filesystem()
 
@@ -213,4 +216,39 @@ def compute(snooper_section, xml_files):  # noqa: C901
     files_df = xml_files.filesystem().files('**/*.xml')
     rdd = files_df.rdd.flatMap(process_file)
     processed_df = rdd.toDF(section_snooper_schema)
-    snooper_section.write_dataframe(processed_df)
+
+    # Extract just the filename from the source column for joining
+    processed_df = processed_df.withColumn("source_filename", F.col("source"))
+
+    # First convert inputs to DataFrames
+    metadata_df = metadata.dataframe()
+    hcs_to_dp_df = hcs_to_dp.dataframe()
+
+    # Select only necessary columns from metadata table for the join
+    metadata_df = metadata_df.select("response_file_path", "healthcare_site")
+
+    # Join with metadata to get the healthcare_site
+    joined_df = processed_df.join(
+        metadata_df,
+        processed_df["source_filename"] == metadata_df["response_file_path"],
+        "left"
+    )
+
+    # Join with healthcare_site_to_data_partner_id to get the partner_id
+    hcs_to_dp_df = hcs_to_dp_df.select("healthcare_site", "data_partner_id")
+
+    # Final join to get partner_id
+    final_df = joined_df.join(
+        hcs_to_dp_df,
+        joined_df["healthcare_site"] == hcs_to_dp_df["healthcare_site"],
+        "left"
+    ).select(
+        processed_df["*"],  # All columns from processed_df
+        hcs_to_dp_df["data_partner_id"].alias("partner_id")  # Add partner_id column
+    )
+
+    # Ensure no duplicate columns exist
+    final_df = final_df.drop(joined_df["partner_id"])
+
+    # Write the result
+    snooper_section.write_dataframe(final_df)

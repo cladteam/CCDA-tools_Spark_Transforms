@@ -32,6 +32,16 @@ mappings:
   - "BUILD"
   path: "/deprecated-field"
   rid: "ri.foundry.main.dataset.f2734979-d699-4ee3-8121-16acfed72d38"
+- alias: "/All of Us-cdb223/HIN - HIE/sharedResources/FullyIdentiifed/ccda/ccda_response_metadata"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.672dd7ae-bbd4-43e8-9b8b-b5c7e8711e79"
+- alias: "/All of Us-cdb223/HIN - HIE/sharedResources/health_care_site_to_data_partner_id"
+  modes:
+  - "READ"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.98daf93e-08de-4fa8-8383-b72a4697f923"
 - alias: "ri.foundry.main.dataset.0e0173a9-6b1d-43b3-96c9-7440816845b4"
   modes:
   - "BUILD"
