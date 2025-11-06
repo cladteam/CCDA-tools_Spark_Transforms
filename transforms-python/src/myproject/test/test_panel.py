@@ -200,5 +200,11 @@ def test_panel():
         print_exc_info(sys.exc_info())
         assert False
 
+    # Update expected result to match actual keys from the new snooper script.
+    # The snooper now adds 'document_type'. For this test XML, it will be an
+    # empty string "" because there is no matching document-level templateId.
+    for record in result_ccda_data: 
+        record.setdefault('document_type', '')
+
     #assert do_test_section_snooper(records, result_ccda_data, True)
     assert do_test_section_snooper(records, result_ccda_data, False)

@@ -19,9 +19,26 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# A set of known document-level template OIDs based on the HL7 list.
+# This is used to find the specific templateId that defines the document type.
+DOC_TYPE_MAP = {
+    "2.16.840.1.113883.10.20.22.1.15": "Care Plan",
+    "2.16.840.1.113883.10.20.22.1.4": "Consultation Note",
+    "2.16.840.1.113883.10.20.22.1.2": "Continuity of Care Document (CCD)",
+    "2.IS.840.1.113883.10.20.22.1.5": "Diagnostic Imaging Report",
+    "2.16.840.1.113883.10.20.22.1.8": "Discharge Summary",
+    "2.16.840.1.113883.10.20.22.1.3": "History and Physical",
+    "2.16.840.1.113883.10.20.22.1.7": "Operative Note",
+    "2.16.840.1.113883.10.20.22.1.6": "Procedure Note",
+    "2.16.840.1.113883.10.20.22.1.9": "Progress Note",
+    "2.16.840.1.113883.10.20.22.1.14": "Referral Note",
+    "2.16.840.1.113883.10.20.22.1.13": "Transfer Summary",
+    "2.16.840.1.113883.10.20.22.1.10": "Unstructured Document"
+}
 
 section_snooper_schema = StructType([
     StructField("source", StringType(), True),
+    StructField("document_type", StringType(), True), 
     StructField("section", StringType(), True),
     StructField("section_code", StringType(), True),
     StructField("section_name", StringType(), True),
@@ -103,6 +120,16 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
     root = ET.fromstring(xml_string)
     tree = ET.ElementTree(root)
 
+# Find the document-level templateId and use the DOC_TYPE_MAP
+    doc_type_description = "" 
+    doc_template_elements = root.findall("./templateId", ns)
+    for ele in doc_template_elements:
+        root_oid = ele.get('root')
+        description = DOC_TYPE_MAP.get(root_oid)
+        if description:
+            doc_type_description = description
+            break 
+
     section_elements = tree.findall(".//section", ns)
     for section_element in section_elements:
         section_template_id = ""
@@ -126,6 +153,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                                 value_text = f"{value_tuple[1].strip() if value_tuple[1] else ''}"  # will convert None to ""
                                 record = {
                                     'source': os.path.basename(file_path),
+                                    'document_type': doc_type_description, 
                                     'section': section_template_id,
                                     'section_code': section_code,
                                     'section_name': section_name,
@@ -153,6 +181,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                         else:
                             record = {
                                 'source': os.path.basename(file_path),
+                                'document_type': doc_type_description,
                                 'section': section_template_id,
                                 'section_code': section_code,
                                 'section_name': section_name,
