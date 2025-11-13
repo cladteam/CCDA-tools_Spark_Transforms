@@ -186,6 +186,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                                 'section_code': section_code,
                                 'section_name': section_name,
                                 'path': code_path_key,
+                                'clean_path': clean_path(code_path_key),
                                 # codes
                                 'code': code_row['code'],
                                 'codeSystem': code_row['codeSystem'],
@@ -247,7 +248,7 @@ def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
     processed_df = rdd.toDF(section_snooper_schema)
 
     # Extract just the filename from the source column for joining
-    processed_df = processed_df.withColumn("source_filename", F.col("source"))
+    processed_df = processed_df.withColumn("source_filename", F.col("source")) 
 
     # First convert inputs to DataFrames
     metadata_df = metadata.dataframe()

@@ -37,7 +37,10 @@ data = [
     'other/wild/card/stuff/should/pass'),
 
     ('other/wild/card/stuff/should/pass',
-    'other/wild/card/stuff/should/pass')
+    'other/wild/card/stuff/should/pass'),
+
+    ('component/structuredBody/component[1]/section/entry[1]/act', 
+     'component/structuredBody/component/section/entry/act')
 ]
 
 
@@ -51,7 +54,7 @@ def test_path():
             print(f"EXCEPTION when running {x}")
             print_exc_info(sys.exc_info())
             assert False
-        #print(f" {cleaned == test_tuple[1]}  {test_tuple[0]} \n"
-        #      f"    expecting: {test_tuple[1]}\n"
-        #      f"    got:       {cleaned} ")
+        print(f" {cleaned == test_tuple[1]}  {test_tuple[0]} \n"
+              f"    expecting: {test_tuple[1]}\n"
+              f"    got:       {cleaned} ")
         assert (cleaned == test_tuple[1])
