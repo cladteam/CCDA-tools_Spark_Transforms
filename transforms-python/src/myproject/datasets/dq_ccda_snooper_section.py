@@ -112,23 +112,78 @@ def collect_code_elements(entry_ele, tree):
                 code_attribs_dict['path'] = parent_path
                 code_dict[parent_path].append((code_attribs_dict, code_ele.text))
     return code_dict
+    
 
-
-def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
-    """Process a single XML file and extract records from it"""
+def find_encompassingEncounters(tree, file_path, doc_type_name):
+    ''' encompassingEncounter, a special case hammered into the sections here.
+        No template ID, will use "0.0.1" 
+        Mostly only expect one of these, but returning a list of records.
+        "fake" because these come from the header, not the body, and they're not sections
+    '''
     records = []
-    root = ET.fromstring(xml_string)
-    tree = ET.ElementTree(root)
+    fake_section_code = "n/a"
+    fake_section_template_id = "0.0.1"
+    fake_section_name = "encompassingEncounter"
 
-# Find the document-level templateId and use the DOC_TYPE_MAP
+    path = './componentOf/encompassingEncounter'
+    clean_path = '/componentOf/encompassingEncounter'
+    elements = tree.findall(path, ns)
+
+    for encounter_ele in elements:
+        code=None
+        codeSystem=None
+        code_ele = encounter_ele.find("code", ns)
+        translation_code_ele = encounter_ele.find("translation", ns)
+        if code_ele is not None:
+            code=code_ele.get("code")
+            codeSystem=code_ele.get('codeSystem')
+        elif translation_code_ele is not None:
+            code=translation_code_ele.get("code")
+            codeSystem=translation_code_ele.get('codeSystem')
+        else:
+            code=0
+            codeSystem="n/a"
+        record = {
+            'source': os.path.basename(file_path),
+            'document_type': doc_type_name,
+            'section': fake_section_template_id,
+            'section_code': fake_section_code,
+            'section_name': fake_section_name,
+            'path': path,
+            'clean_path': clean_path,
+            # codes
+            #'code': code_ele.get('code'),
+            #'codeSystem': code_ele.get('codeSystem'),
+            'code': code,
+            'codeSystem': codeSystem,
+            # values
+            'value_type': '',
+            'value_unit': '',
+            'value_value': '',
+            'value_code': '',
+            'value_codeSystem': '',
+            'value_text': ''
+        }
+        records.append(record)
+    return records
+
+
+
+def find_doctype(tree):
     doc_type_description = "" 
-    doc_template_elements = root.findall("./templateId", ns)
+    doc_template_elements = tree.findall("./templateId", ns)
     for ele in doc_template_elements:
         root_oid = ele.get('root')
         description = DOC_TYPE_MAP.get(root_oid)
         if description:
             doc_type_description = description
-            break 
+            break
+
+    return doc_type_description
+
+def find_sections(tree, file_path, doc_type_name, verbose):
+    records = []
+
 
     section_elements = tree.findall(".//section", ns)
     for section_element in section_elements:
@@ -153,7 +208,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                                 value_text = f"{value_tuple[1].strip() if value_tuple[1] else ''}"  # will convert None to ""
                                 record = {
                                     'source': os.path.basename(file_path),
-                                    'document_type': doc_type_description, 
+                                    'document_type': doc_type_name, 
                                     'section': section_template_id,
                                     'section_code': section_code,
                                     'section_name': section_name,
@@ -181,7 +236,7 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                         else:
                             record = {
                                 'source': os.path.basename(file_path),
-                                'document_type': doc_type_description,
+                                'document_type': doc_type_name,
                                 'section': section_template_id,
                                 'section_code': section_code,
                                 'section_name': section_name,
@@ -207,6 +262,22 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
                                     print(f"REJECTED {code_path_key}")
 
     return records
+
+
+def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
+    """Process a single XML file and extract records from it"""
+    root = ET.fromstring(xml_string)
+    tree = ET.ElementTree(root)
+
+    doc_type_name = find_doctype(tree)
+    section_records = find_sections(tree, file_path, doc_type_name, verbose=False)
+    ee_records = find_encompassingEncounters(tree, file_path, doc_type_name)
+    section_records.extend(ee_records)
+    return section_records
+
+
+
+
 
 
 def get_file_paths_from_dataframe(df: DataFrame, file_column: str = "filePath") -> List[str]:
@@ -240,8 +311,10 @@ def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
             for match in doc_regex.finditer(contents):
                 match_tuple = match.groups(0)
                 xml_content = match_tuple[0]
-                for thing in process_xml_file(file_status.path, xml_content):
-                    yield thing
+                stuff =  process_xml_file(file_status.path, xml_content)
+                if stuff:
+                    for thing in stuff:
+                        yield thing
 
     files_df = xml_files.filesystem().files('**/*.xml')
     rdd = files_df.rdd.flatMap(process_file)

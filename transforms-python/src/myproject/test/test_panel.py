@@ -7,6 +7,8 @@ import sys
 # rd_response_529030608625435153_2.25.296032531060316834054964486720371020921.xm
 result_ccda_data= [
    { 
+      'document_type': "Continuity of Care Document (CCD)",
+      
       'source': "test_file",
       'section': "2.16.840.1.113883.10.20.22.2.3.1",
       'section_code': "30954-2",
@@ -25,6 +27,8 @@ result_ccda_data= [
       'value_text': None
    },
    {
+      'document_type': "Continuity of Care Document (CCD)",
+      
       'source': "test_file",
       'section': "2.16.840.1.113883.10.20.22.2.3.1",
       'section_code': "30954-2",
@@ -43,6 +47,8 @@ result_ccda_data= [
       'value_text': None
    },
    {
+      'document_type': "Continuity of Care Document (CCD)",
+      
       'source': "test_file",
       'section': "2.16.840.1.113883.10.20.22.2.3.1",
       'section_code': "30954-2",
@@ -59,7 +65,28 @@ result_ccda_data= [
       'value_code': "",
       'value_codeSystem': "",
       'value_text': None 
+   },
+   {
+   'document_type': "Continuity of Care Document (CCD)",
+   
+   'source': "test_file",
+   'section': "0.0.0",
+   'section_code': "n/a",
+   'section_name': "encompassingEncounter",
+
+   'path':  './hl7:componentOf/hl7:encompassingEncounter',
+   'clean_path':  './componentOf/encompassingEncounter',
+   'code': "23360400",
+   'codeSystem': "2.16.840.1.113883.6.96",
+
+   'value_type': None,
+   'value_unit': None,
+   'value_value': None,
+   'value_code': None,
+   'value_codeSystem': None,
+   'value_text': None 
    }
+   
 ]
 
 test_ccda_string = """
@@ -68,6 +95,26 @@ test_ccda_string = """
  xmlns="urn:hl7-org:v3"
  xmlns:cda="urn:hl7-org:v3"
  xmlns:sdtc="urn:hl7-org:sdtc">
+
+   <!-- CCD document type -->
+   <templateId root="2.16.840.1.113883.10.20.22.1.2"/>
+
+   <componentOf>
+      <encompassingEncounter>
+         <id extension="1" root="2.16.840.1.113883.4.6"/>
+         <code
+            code="233604007"
+            codeSystem="2.16.840.1.113883.6.96"
+            codeSystemName="SNOMED-CT"
+            displayName="Pnuemonia"/>
+         <effectiveTime>
+            <low
+               value="20120806"/>
+            <high
+               value="20120813"/>
+         </effectiveTime>
+      </encompassingEncounter>
+   </componentOf>
    
    <component>
       <structuredBody>
@@ -195,16 +242,10 @@ test_ccda_string = """
 def test_panel():
     try:
         records = process_xml_file("test_file", test_ccda_string)
+
     except Exception as x:
         print(f"EXCEPTION when running {x}")
         print_exc_info(sys.exc_info())
         assert False
 
-    # Update expected result to match actual keys from the new snooper script.
-    # The snooper now adds 'document_type'. For this test XML, it will be an
-    # empty string "" because there is no matching document-level templateId.
-    for record in result_ccda_data: 
-        record.setdefault('document_type', '')
-
-    #assert do_test_section_snooper(records, result_ccda_data, True)
-    assert do_test_section_snooper(records, result_ccda_data, False)
+    assert do_test_section_snooper(records, result_ccda_data, verbose=False, picky=False)

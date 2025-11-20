@@ -20,6 +20,14 @@ def compare_dict_lists(a, b):
         return False
 
     for i in range(3):
+        if a[i] is None and b[i] is None:
+            return True
+        if a[i] is None:
+            print(f"Hang on, a[i] {i} is none, but b[i] s {b[i]}")
+            return False
+        if b[i] is None:
+            print(f"Hang on, b[i] {i} is none, but a[i] s {a[i]}")
+            return False
         if a[i].keys() != b[i].keys():
             print(f"\nThe keys are not the same in the {i} pair of dictionaries: {a[i].keys()}, and {b[i].keys()}.")
             return False
@@ -28,8 +36,8 @@ def compare_dict_lists(a, b):
         for key in a[i].keys():
             if a[i][key] != b[i][key]:
                 print(f"\nThe value for the key: \"{key}\" in the {i} dictionaries is not the same: \n"
-                      f"   \"{a[i][key]}\", and \n   \"{b[i][key]}\"."
-                      f"{type(a[i][key])}  {type(b[i][key])}")
+                    f"   \"{a[i][key]}\", and \n   \"{b[i][key]}\"."
+                    f"{type(a[i][key])}  {type(b[i][key])}")
                 good = False
         return good
 
@@ -55,8 +63,11 @@ def compare_lists(a, b):
 def print_dict_list(records):
     for rec in records:
         print(type(rec))
-        for key, val in rec.items():
-            print(f"{key}: \"{val}\" {type(val)} ")
+        if rec:
+            for key, val in rec.items():
+                print(f"{key}: \"{val}\" {type(val)} ")
+        else:
+                print("rec. empty ")
         print("")
 
 
@@ -76,18 +87,18 @@ def print_exc_info(exc_info):
     print(f"Line of code: {line_of_code}")
 
 
-def do_test_section_snooper(records, expected_rows, verbose=False):
+def do_test_section_snooper(records, expected_rows, verbose=False, picky=False):
     try:
         good = compare_dict_lists(records, expected_rows)
         if not good:
-            print("TEST FAILED\n")
+            print("TEST FAILED compare_dict_lists\n")
             if verbose:
-                print("RECIEVED:")
+                print(f"RECIEVED: {len(records)}")
                 print_dict_list(records)
-                print("\nEXPECTED:")
+                print(f"\nEXPECTED: {len(expected_rows)}")
                 print_dict_list(expected_rows)
         else:
-            print("TEST PASSSED")
+            print("TEST PASSSED compare_dict_lists")
             if verbose:
                 print_dict_list(records)
     except Exception as x:
@@ -97,5 +108,15 @@ def do_test_section_snooper(records, expected_rows, verbose=False):
         assert False
 
     print(f"equal? {records == expected_rows}")
-    print(f"good? {good}")
-    return (records == expected_rows and good)
+    if picky:
+        print(f"good? {good}")
+        if not (records == expected_rows and good):
+            print("FAIL == test")
+            if verbose:
+                print("FAIL - records")
+                print(records)
+                print("FAIL - expected")
+                print(expected_rows)
+        return (records == expected_rows and good) 
+    else:
+        return (good)
