@@ -3,7 +3,7 @@ from myproject.test.the_test_utils import do_test_section_snooper
 from myproject.test.the_test_utils import print_exc_info
 from myproject.datasets.dq_ccda_snooper_section import process_xml_file
 
-
+ 
 result_ccda_data= [ ]
 
 

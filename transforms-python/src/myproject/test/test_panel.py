@@ -2,7 +2,7 @@ from myproject.test.the_test_utils import do_test_section_snooper
 from myproject.test.the_test_utils import print_exc_info
 from myproject.datasets.dq_ccda_snooper_section import process_xml_file
 import sys
-
+ 
 
 # rd_response_529030608625435153_2.25.296032531060316834054964486720371020921.xm
 result_ccda_data= [

@@ -1,4 +1,4 @@
-from transforms.api import transform, Input, Output,  configure
+from transforms.api import transform, Input, Output, configure
 import os
 import io
 import logging
@@ -10,7 +10,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from typing import List
 from pyspark.sql import functions as F
-from ..util import clean_path, keep_path
+from myproject.util import clean_path, keep_path, DOC_TYPE_MAP
 
 logging.basicConfig(
     format='%(levelname)s: %(message)s',
@@ -19,22 +19,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# A set of known document-level template OIDs based on the HL7 list.
-# This is used to find the specific templateId that defines the document type.
-DOC_TYPE_MAP = {
-    "2.16.840.1.113883.10.20.22.1.15": "Care Plan",
-    "2.16.840.1.113883.10.20.22.1.4": "Consultation Note",
-    "2.16.840.1.113883.10.20.22.1.2": "Continuity of Care Document (CCD)",
-    "2.IS.840.1.113883.10.20.22.1.5": "Diagnostic Imaging Report",
-    "2.16.840.1.113883.10.20.22.1.8": "Discharge Summary",
-    "2.16.840.1.113883.10.20.22.1.3": "History and Physical",
-    "2.16.840.1.113883.10.20.22.1.7": "Operative Note",
-    "2.16.840.1.113883.10.20.22.1.6": "Procedure Note",
-    "2.16.840.1.113883.10.20.22.1.9": "Progress Note",
-    "2.16.840.1.113883.10.20.22.1.14": "Referral Note",
-    "2.16.840.1.113883.10.20.22.1.13": "Transfer Summary",
-    "2.16.840.1.113883.10.20.22.1.10": "Unstructured Document"
-}
 
 section_snooper_schema = StructType([
     StructField("source", StringType(), True),
@@ -126,7 +110,7 @@ def find_encompassingEncounters(tree, file_path, doc_type_name):
     fake_section_name = "encompassingEncounter"
 
     path = './componentOf/encompassingEncounter'
-    clean_path = '/componentOf/encompassingEncounter'
+    clean_path = 'componentOf/encompassingEncounter'
     elements = tree.findall(path, ns)
 
     for encounter_ele in elements:
