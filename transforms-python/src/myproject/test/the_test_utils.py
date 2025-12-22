@@ -17,6 +17,10 @@ def compare_dict_lists(a, b):
 
     if (len(a) != len(b)):
         print(f"\nThe lists are different lengths {len(a)}, and {len(b)}.")
+        for thing in a:
+            print(f"  A: {thing}")
+        for thing in b:
+            print(f"  B: {thing}")
         return False
 
     for i in range(3):

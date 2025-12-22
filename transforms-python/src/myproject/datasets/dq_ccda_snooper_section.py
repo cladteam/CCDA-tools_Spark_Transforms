@@ -98,59 +98,6 @@ def collect_code_elements(entry_ele, tree):
     return code_dict
     
 
-def find_encompassingEncounters(tree, file_path, doc_type_name):
-    ''' encompassingEncounter, a special case hammered into the sections here.
-        No template ID, will use "0.0.1" 
-        Mostly only expect one of these, but returning a list of records.
-        "fake" because these come from the header, not the body, and they're not sections
-    '''
-    records = []
-    fake_section_code = "n/a"
-    fake_section_template_id = "0.0.1"
-    fake_section_name = "encompassingEncounter"
-
-    path = './componentOf/encompassingEncounter'
-    clean_path = 'componentOf/encompassingEncounter'
-    elements = tree.findall(path, ns)
-
-    for encounter_ele in elements:
-        code=None
-        codeSystem=None
-        code_ele = encounter_ele.find("code", ns)
-        translation_code_ele = encounter_ele.find("translation", ns)
-        if code_ele is not None:
-            code=code_ele.get("code")
-            codeSystem=code_ele.get('codeSystem')
-        elif translation_code_ele is not None:
-            code=translation_code_ele.get("code")
-            codeSystem=translation_code_ele.get('codeSystem')
-        else:
-            code=0
-            codeSystem="n/a"
-        record = {
-            'source': os.path.basename(file_path),
-            'document_type': doc_type_name,
-            'section': fake_section_template_id,
-            'section_code': fake_section_code,
-            'section_name': fake_section_name,
-            'path': path,
-            'clean_path': clean_path,
-            # codes
-            #'code': code_ele.get('code'),
-            #'codeSystem': code_ele.get('codeSystem'),
-            'code': code,
-            'codeSystem': codeSystem,
-            # values
-            'value_type': '',
-            'value_unit': '',
-            'value_value': '',
-            'value_code': '',
-            'value_codeSystem': '',
-            'value_text': ''
-        }
-        records.append(record)
-    return records
-
 
 
 def find_doctype(tree):
@@ -255,8 +202,6 @@ def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901
 
     doc_type_name = find_doctype(tree)
     section_records = find_sections(tree, file_path, doc_type_name, verbose=False)
-    ee_records = find_encompassingEncounters(tree, file_path, doc_type_name)
-    section_records.extend(ee_records)
     return section_records
 
 

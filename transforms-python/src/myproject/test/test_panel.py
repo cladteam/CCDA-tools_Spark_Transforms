@@ -65,26 +65,6 @@ result_ccda_data= [
       'value_code': "",
       'value_codeSystem': "",
       'value_text': None 
-   },
-   {
-   'document_type': "Continuity of Care Document (CCD)",
-   
-   'source': "test_file",
-   'section': "0.0.0",
-   'section_code': "n/a",
-   'section_name': "encompassingEncounter",
-
-   'path':  './hl7:componentOf/hl7:encompassingEncounter',
-   'clean_path':  './componentOf/encompassingEncounter',
-   'code': "23360400",
-   'codeSystem': "2.16.840.1.113883.6.96",
-
-   'value_type': None,
-   'value_unit': None,
-   'value_value': None,
-   'value_code': None,
-   'value_codeSystem': None,
-   'value_text': None 
    }
    
 ]

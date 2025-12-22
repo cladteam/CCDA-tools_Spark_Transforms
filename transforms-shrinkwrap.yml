@@ -1,5 +1,10 @@
 ---
 mappings:
+- alias: "/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_header"
+  modes:
+  - "BUILD"
+  path: "/deprecated-field"
+  rid: "ri.foundry.main.dataset.0fceb7fb-c331-4ee4-9c78-fe656e652aba"
 - alias: "/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spark/dq_ccda_snooper_section"
   modes:
   - "BUILD"
