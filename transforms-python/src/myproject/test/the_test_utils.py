@@ -97,10 +97,12 @@ def do_test_section_snooper(records, expected_rows, verbose=False, picky=False):
         if not good:
             print("TEST FAILED compare_dict_lists\n")
             if verbose:
-                print(f"RECIEVED: {len(records)}")
-                print_dict_list(records)
-                print(f"\nEXPECTED: {len(expected_rows)}")
-                print_dict_list(expected_rows)
+                for i in range(len(records)):
+                    print(f"RECIEVED: {i}")
+                    print_dict_list(records[i:(i+1)])
+                    print(f"\nEXPECTED: {i}")
+                    print_dict_list(expected_rows[i:(i+1)])
+                    print("\n")
         else:
             print("TEST PASSSED compare_dict_lists")
             if verbose:

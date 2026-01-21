@@ -34,6 +34,12 @@ section_snooper_schema = StructType([
     StructField("value_code", StringType(), True),
     StructField("value_codeSystem", StringType(), True),
     StructField("value_text", StringType(), True),
+    StructField("date", StringType(), True),  # indexed
+    StructField("start_date", StringType(), True),  # indexed
+    StructField("end_date", StringType(), True),  # indexed
+    StructField("date_debug", StringType(), True),  # indexed
+    StructField("start_date_debug", StringType(), True),  # indexed
+    StructField("end_date_debug", StringType(), True),  # indexed
     StructField("path", StringType(), True),  # indexed
     StructField("clean_path", StringType(), True),
     StructField("partner_id", StringType(), True)
@@ -55,6 +61,41 @@ path_exclusion_list = [ # not parent paths
     r'.*/referenceRange/observationRange/code$' 
 ]
 
+
+def get_time_value(tree, entry_ele, path, name, depth):
+    """ Returns a dictionary from path to a dictoinary of name to date value under effectiveTime.
+        path --> name --> value
+        The name tells is it is just a value, low or high, but
+        uses the names date, start_date, and end_date.
+    """
+    date_dict = defaultdict(dict)
+    for value_ele in entry_ele.findall(path, ns):
+        # Clean the XML path (remove namespace references)
+        innards = ET.tostring(value_ele, encoding="unicode")
+        path = re.sub(r'{.*?}', '', tree.getelementpath(value_ele))
+        parent_path = "/".join(path.split("/")[:-depth])  # Get parent path
+        value = None
+        for attr in value_ele.attrib:
+            clean_attr = re.sub(r'{.*?}', '', attr)
+            clean_value = re.sub(r'{.*?}', '', value_ele.attrib.get(attr, ''))
+            if clean_attr == 'value':
+                value = clean_value
+        #date_dict[parent_path] = {name: value, (name + '_debug'): f"{value_ele.attrib}" }
+        if value:
+            date_dict[parent_path] = {name: value, (name + '_debug'): innards }
+        else:
+            date_dict[parent_path] = {name: "-null-", (name + '_debug'): innards }
+
+    return date_dict 
+
+def collect_time_values(entry_ele, tree):
+    # Dict of (name, value) tuples, keyed by path
+    date_dict = get_time_value(tree, entry_ele, ".//effectiveTime", "date", 1)
+    low_dict = get_time_value(tree, entry_ele, ".//effectiveTime/low", "start_date", 2)
+    high_dict  = get_time_value(tree, entry_ele, ".//effectiveTime/high", "end_date", 2)
+        
+    return date_dict | high_dict | low_dict
+    #return date_dict
 
 
 def collect_value_elements(entry_ele, tree):
@@ -112,7 +153,9 @@ def find_doctype(tree):
 
     return doc_type_description
 
+
 def find_sections(tree, file_path, doc_type_name, verbose):
+    record_dict = {}
     records = []
 
 
@@ -130,6 +173,7 @@ def find_sections(tree, file_path, doc_type_name, verbose):
             for entry_ele in section_element.findall("entry", ns):
                 value_dict = collect_value_elements(entry_ele, tree)
                 code_dict = collect_code_elements(entry_ele, tree)
+                path_date_dict = collect_time_values(entry_ele, tree)
                 for code_path_key in code_dict:
                     for code_tuple in code_dict[code_path_key]:
                         code_row =  code_tuple[0]
@@ -154,8 +198,16 @@ def find_sections(tree, file_path, doc_type_name, verbose):
                                     'value_value': value_row['value'],
                                     'value_code': value_row['code'],
                                     'value_codeSystem': value_row['codeSystem'],
-                                    'value_text': value_text if value_tuple[1] else None
+                                    'value_text': value_text if value_tuple[1] else None,
+                                    # dates
+                                    'date': None,
+                                    'start_date': None,
+                                    'end_date': None,
+                                    'date_debug': None,
+                                    'start_date_debug': None,
+                                    'end_date_debug': None,
                                 }
+                                record_dict[code_path_key]=record
                                 if keep_path(clean_path(code_path_key), path_exclusion_list):
                                     if verbose:
                                         print(f"ACCEPTED key:{code_path_key}  type:{type(value_tuple[1])} text:\"{value_tuple[1].strip() if value_tuple[1] else ''}\"  attrs:{value_tuple[0]}   ")
@@ -182,8 +234,16 @@ def find_sections(tree, file_path, doc_type_name, verbose):
                                 'value_value': '',
                                 'value_code': '',
                                 'value_codeSystem': '',
-                                'value_text': ''
+                                'value_text': '',
+                                # dates
+                                'date': None,
+                                'start_date': None,
+                                'end_date': None,
+                                'date_debug': None,
+                                'start_date_debug': None,
+                                'end_date_debug': None,
                             }
+                            record_dict[code_path_key]=record
                             if keep_path(clean_path(code_path_key), path_exclusion_list):
                                 if verbose:
                                     print(f"ACCEPTED {code_path_key} (no value_* values) ")
@@ -191,8 +251,13 @@ def find_sections(tree, file_path, doc_type_name, verbose):
                             else:
                                 if verbose:
                                     print(f"REJECTED {code_path_key}")
+                for path, date_dict in path_date_dict.items():
+                    if path in record_dict:
+                        for name, value in date_dict.items():
+                            record_dict[path][name]=value 
 
-    return records
+    #return records
+    return list(record_dict.values())
 
 
 def process_xml_file(file_path, xml_string, verbose=False):  # noqa: C901

@@ -24,7 +24,15 @@ result_ccda_data= [
       'value_value': "10.2",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': None
+      'value_text': None,
+      "date": "20120810",
+      "start_date": None,
+      "end_date": None,
+      #"date_debug": "{'value': '20120810'}",
+      "date_debug":"""<effectiveTime xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cda="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc" value="20120810"/>
+                           """, 
+      "start_date_debug": None,
+      "end_date_debug": None,
    },
    {
       'document_type': "Continuity of Care Document (CCD)",
@@ -44,7 +52,15 @@ result_ccda_data= [
       'value_value': "12.3",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': None
+      'value_text': None,
+      "date": "20120810",
+      "start_date": None,
+      "end_date": None,
+      #"date_debug": "{'value': '20120810'}",
+      "date_debug": """<effectiveTime xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cda="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc" value="20120810"/>
+                           """, 
+      "start_date_debug": None,
+      "end_date_debug": None
    },
    {
       'document_type': "Continuity of Care Document (CCD)",
@@ -64,7 +80,16 @@ result_ccda_data= [
       'value_value': "123",
       'value_code': "",
       'value_codeSystem': "",
-      'value_text': None 
+      'value_text': None ,
+      "date": "20120810",
+      "start_date": None,
+      "end_date": None,
+      #"date_debug": "{'value': '20120810'}",
+      "date_debug": """<effectiveTime xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cda="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc" value="20120810"/>
+                           """, 
+      "start_date_debug": None, 
+      "end_date_debug": None
+
    }
    
 ]
