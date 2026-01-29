@@ -289,8 +289,10 @@ snooper_section=Output("/All of Us-cdb223/HIN - HIE/CCDA/IdentifiedData/CCDA_spa
     # xml_files=Input("ri.foundry.main.dataset.8c8ff8f9-d429-4396-baed-a3de9c945f49"),
     metadata=Input("/All of Us-cdb223/HIN - HIE/sharedResources/FullyIdentiifed/ccda/ccda_response_metadata"),
     hcs_to_dp=Input("/All of Us-cdb223/HIN - HIE/sharedResources/health_care_site_to_data_partner_id"),
+    vocab_map=Input("ri.foundry.main.dataset.b490ab10-7fea-484a-8291-47e058e62417"),
+    omop_concept=Input('ri.foundry.main.dataset.831ad30e-a134-41ac-8f68-def86cc8b05c')
 )
-def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
+def compute(snooper_section, xml_files, metadata, hcs_to_dp, vocab_map, omop_concept):  # noqa: C901
     doc_regex = re.compile(r'(<ClinicalDocument.*?</ClinicalDocument>)', re.DOTALL)
     fs = xml_files.filesystem()
 
@@ -315,11 +317,13 @@ def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
     processed_df = rdd.toDF(section_snooper_schema)
 
     # Extract just the filename from the source column for joining
-    processed_df = processed_df.withColumn("source_filename", F.col("source")) 
+    processed_df = processed_df.withColumn("source_filename", F.col("source"))
 
     # First convert inputs to DataFrames
     metadata_df = metadata.dataframe()
     hcs_to_dp_df = hcs_to_dp.dataframe()
+    vocab_map_df = vocab_map.dataframe()
+    omop_concept_df = omop_concept.dataframe()
 
     # Select only necessary columns from metadata table for the join
     metadata_df = metadata_df.select("response_file_path", "healthcare_site")
@@ -347,5 +351,25 @@ def compute(snooper_section, xml_files, metadata, hcs_to_dp):  # noqa: C901
     # Ensure no duplicate columns exist
     final_df = final_df.drop(joined_df["partner_id"])
 
+    enriched_df = final_df.join(
+    vocab_map_df,
+    final_df["codeSystem"] == vocab_map_df["code_system"],
+    "left"
+    )
+
+    # Join on code and vocabulary_id to get domain_id (domain name)
+    enriched_df = enriched_df.join(
+    omop_concept_df.select("concept_code", "vocabulary_id", "domain_id"),
+    (enriched_df["code"] == omop_concept_df["concept_code"]) &
+    (enriched_df["omop_vocabulary_id"] == omop_concept_df["vocabulary_id"]),
+    "left"
+    )
+
+    enriched_df = enriched_df.withColumnRenamed("domain_id", "domain_id")
+
+    # Select only the original columns plus omop_domain_name
+    output_columns = final_df.columns + ["domain_id"]
+    enriched_df = enriched_df.select(*output_columns)
+
     # Write the result
-    snooper_section.write_dataframe(final_df)
+    snooper_section.write_dataframe(enriched_df)
